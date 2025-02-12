@@ -1,3 +1,9 @@
+/*
+Grupo 206
+Jorge Mejias Donoso-Alberto Menchen Montero-206
+100495807@alumnos.uc3m.es 100495692@alumnos.uc3m.es
+*/
+
 %{					/* Seccion 1  Declaraciones de C-bison */
 #include <stdio.h>
 #define YYSTYPE  double
@@ -5,7 +11,7 @@ double pot ;
 %}
                     		/* Seccion 2  Declaraciones de bison   */  
 %%
-					/* Seccion 3  Gramática - Semántico   */
+					/* Seccion 3  Gramï¿½tica - Semï¿½ntico   */
 
 axioma:      expresion '\n' { printf ("Expresion=%lf\n", $1) ; }  r_expr 
            ;
@@ -14,13 +20,22 @@ r_expr:			/* lambda */
            | axioma
            ;
 
-expresion:   operando                { $$ = $1 ; }
-           | operando '+' expresion  { $$ = $1 + $3 ; }
-           | operando '-' expresion  { $$ = $1 - $3 ; }
-           | operando '*' expresion  { $$ = $1 * $3 ; }
-           | operando '/' expresion  { $$ = $1 / $3 ; }
-           | '('  expresion  ')'     { $$ = $2 ; }
-           ;
+expresion:
+    expresion '+' termino  { $$ = $1 + $3; }
+  | expresion '-' termino  { $$ = $1 - $3; }
+  | termino                { $$ = $1; }
+  ;
+
+termino:
+    termino '*' factor     { $$ = $1 * $3; }
+  | termino '/' factor     { $$ = $1 / $3; }
+  | factor                 { $$ = $1; }
+  ;
+
+factor:
+    '(' expresion ')'      { $$ = $2; }
+  | operando               { $$ = $1; }
+  ;
 
 operando:    numero                  { $$ = $1 ; }
            | '-' numero              { $$ = -$2 ; }
@@ -43,7 +58,7 @@ digito:      '0'                     { $$ = 0 ; }
            | '9'                     { $$ = 9 ; }
            ;
 %%
-					/* Seccion 4  Código en C   */
+					/* Seccion 4  Cï¿½digo en C   */
 int yyerror (char *mensaje)
 {
     fprintf (stderr, "%s\n", mensaje) ;

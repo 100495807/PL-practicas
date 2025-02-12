@@ -3,3 +3,4 @@
 1: bison "archivo.y"
 2: gcc "archivo.tab.c" -o "output" -Wall
 
+
