@@ -56,7 +56,7 @@ int yyerror(char *mensaje) {
 }
 
 /* suprimir la funcion yylex () si se usa flex */
-///*
+/*
 int yylex() {
     int c;
 
@@ -81,7 +81,7 @@ int yylex() {
 
     return c;
 }
-//*/
+*/
 
 int main() {
     yyparse();

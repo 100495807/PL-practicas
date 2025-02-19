@@ -107,46 +107,7 @@ int get_variable_index(char var) {
 #  endif
 # endif
 
-
-/* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-
-/* Token kinds.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    NUMERO = 258,                  /* NUMERO  */
-    VARIABLE = 259,                /* VARIABLE  */
-    SIGNO_UNARIO = 260             /* SIGNO_UNARIO  */
-  };
-  typedef enum yytokentype yytoken_kind_t;
-#endif
-
-/* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
-#endif
-
-
-extern YYSTYPE yylval;
-
-
-int yyparse (void);
-
-
-
+#include "calc4.tab.h"
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -1137,7 +1098,7 @@ yyreduce:
   case 2: /* $@1: %empty  */
 #line 29 "calc4.y"
                              { printf("Expresion=%lf\n", yyvsp[-1]); }
-#line 1141 "calc4.tab.c"
+#line 1102 "calc4.tab.c"
     break;
 
   case 4: /* $@2: %empty  */
@@ -1146,65 +1107,65 @@ yyreduce:
                 variables[get_variable_index(current_variable)] = yyvsp[-1];
                 printf("Asignacion: %c = %lf\n", current_variable, yyvsp[-1]);
               }
-#line 1150 "calc4.tab.c"
+#line 1111 "calc4.tab.c"
     break;
 
   case 8: /* expresion: expresion '+' expresion  */
 #line 40 "calc4.y"
                                        { yyval = yyvsp[-2] + yyvsp[0]; }
-#line 1156 "calc4.tab.c"
+#line 1117 "calc4.tab.c"
     break;
 
   case 9: /* expresion: expresion '-' expresion  */
 #line 41 "calc4.y"
                                        { yyval = yyvsp[-2] - yyvsp[0]; }
-#line 1162 "calc4.tab.c"
+#line 1123 "calc4.tab.c"
     break;
 
   case 10: /* expresion: expresion '*' expresion  */
 #line 42 "calc4.y"
                                        { yyval = yyvsp[-2] * yyvsp[0]; }
-#line 1168 "calc4.tab.c"
+#line 1129 "calc4.tab.c"
     break;
 
   case 11: /* expresion: expresion '/' expresion  */
 #line 43 "calc4.y"
                                        { yyval = yyvsp[-2] / yyvsp[0]; }
-#line 1174 "calc4.tab.c"
+#line 1135 "calc4.tab.c"
     break;
 
   case 12: /* expresion: NUMERO  */
 #line 44 "calc4.y"
                                        { yyval = yyvsp[0]; }
-#line 1180 "calc4.tab.c"
+#line 1141 "calc4.tab.c"
     break;
 
   case 13: /* expresion: VARIABLE  */
 #line 45 "calc4.y"
                                        { yyval = variables[get_variable_index(current_variable)]; }
-#line 1186 "calc4.tab.c"
+#line 1147 "calc4.tab.c"
     break;
 
   case 14: /* expresion: '+' expresion  */
 #line 46 "calc4.y"
                                                { yyval = yyvsp[0]; }
-#line 1192 "calc4.tab.c"
+#line 1153 "calc4.tab.c"
     break;
 
   case 15: /* expresion: '-' expresion  */
 #line 47 "calc4.y"
                                                { yyval = -yyvsp[0]; }
-#line 1198 "calc4.tab.c"
+#line 1159 "calc4.tab.c"
     break;
 
   case 16: /* expresion: '(' expresion ')'  */
 #line 48 "calc4.y"
                                        { yyval = yyvsp[-1]; }
-#line 1204 "calc4.tab.c"
+#line 1165 "calc4.tab.c"
     break;
 
 
-#line 1208 "calc4.tab.c"
+#line 1169 "calc4.tab.c"
 
       default: break;
     }
@@ -1407,7 +1368,7 @@ int yyerror(char *mensaje) {
 }
 
 /* suprimir la funcion yylex () si se usa flex */
-///*
+/*
 int yylex() {
     int c;
 
@@ -1432,7 +1393,7 @@ int yylex() {
 
     return c;
 }
-//*/
+*/
 
 int main() {
     yyparse();
