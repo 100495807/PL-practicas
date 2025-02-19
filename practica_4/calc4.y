@@ -3,35 +3,34 @@ JORGE MEJIAS DONOSO - ALBERTO MENCHEN MONTERO - 206
 100495807@alumons.uc3m.es 100495692@alumnos.uc3m.es
 */
 
-%{                                /* Seccion 1 Declaraciones de C-bison */
+%{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define YYSTYPE double
 
-#define MAX_VARIABLES 26
+#define MAX_VARIABLES 256
 
 double variables[MAX_VARIABLES]; // Array para almacenar valores de variables (a-z)
 char current_variable; // Variable global para almacenar el nombre de la variable actual
 
-
 int get_variable_index(char var) {
     return var - 'a';
 }
-
 %}
-%token NUMERO VARIABLE                     /* Seccion 2 Declaraciones de bison      */
-%left '+' '-'     /* menor orden de precedencia */
-%left '*' '/'     /* orden de precedencia intermedio */
-%left SIGNO_UNARIO /* define la mayor precedencia, ademas de nuevo token */
+
+%token NUMERO VARIABLE
+%left '+' '-'
+%left '*' '/'
+%left SIGNO_UNARIO
+
 %%
-                                  /* Seccion 3 Gramatica - Semantico      */
 axioma:       expresion '\n' { printf("Expresion=%lf\n", $1); } r_expr
             | VARIABLE '=' expresion '\n' { 
                 variables[get_variable_index(current_variable)] = $3;
                 printf("Asignacion: %c = %lf\n", current_variable, $3);
-              }
+              } r_expr
             ;
 
 r_expr:                    /* lambda */
@@ -49,12 +48,11 @@ expresion:    expresion '+' expresion  { $$ = $1 + $3; }
             | '(' expresion ')'        { $$ = $2; }
             ;
 %%
-                                         /* Seccion 4  Codigo en C    */
-int n_linea= 1 ;
 
-int yyerror (char *mensaje)
-{
-    fprintf (stderr, "%s en la linea %d\n", mensaje, n_linea) ;
+int n_linea = 1;
+
+int yyerror(char *mensaje) {
+    fprintf(stderr, "%s en la linea %d\n", mensaje, n_linea);
 }
 
 /* suprimir la funcion yylex () si se usa flex */
@@ -83,10 +81,8 @@ int yylex() {
 
     return c;
 }
-
 //*/
 
-int main ()
-{
-    yyparse () ;
+int main() {
+    yyparse();
 }
