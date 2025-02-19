@@ -1,15 +1,15 @@
-%{					/* Seccion 1  Declaraciones de C-bison */
+%{
 #include <stdio.h>
-#define YYSTYPE  double		/* tipo de la pila del parser         */
+#define YYSTYPE double
+double pot;
 %}
-%token NUMERO     	       	/* Seccion 2  Declaraciones de bison   */  
-%%
-					/* Seccion 3  Sintactico - Semantico   */
+%token DIG
 
-axioma:      expresion '\n' { printf ("Expresion=%lf\n", $1) ; }  r_expr 
+%%
+axioma:      expresion '\n' { printf("Expresion=%lf\n", $1); }  r_expr 
            ;
 
-r_expr:			/* lambda */
+r_expr:      /* lambda */
            | axioma
            ;
 
@@ -20,42 +20,54 @@ expresion:   operando                { $$ = $1; }
            | operando '/' expresion  { $$ = $1 / $3; }
            ;
 
-operando:    NUMERO                  { $$ = $1; }
-           | '('  expresion  ')'     { $$ = $2; }
-           | '-' NUMERO              { $$ = -$2; }
-           | '+' NUMERO              { $$ = $2; }
+operando:    resto_operando          { $$ = $1; } 
+           | '-' resto_operando      { $$ = -$2; } 
+           | '+' resto_operando      { $$ = $2; } 
+           ; 
+ 
+resto_operando:     
+             numero                  { $$ = $1; } 
+           | '('  expresion  ')'     { $$ = $2; } 
+           ;
+
+numero:      n_entero '.' n_decimal  { $$ = $1 + $3 ; } 
+           | '.' n_decimal           { $$ = $2 ; } 
+           | n_entero                { $$ = $1 ; }
+           ;
+ 
+n_entero:    DIG                    { $$ = $1 ; pot = 1 ; } 
+           | DIG n_entero           { pot *= 10 ; $$ = $1 * pot + $2 ; } 
+           ; 
+ 
+n_decimal  : DIG                    { $$ = $1 / 10.0 ; } 
+           | DIG n_decimal          { $$ = ($1 + $2) / 10.0 ; } 
            ;
 
 %%
-					/* Seccion 4  Codigo en C   */
 
-int yyerror (char *mensaje)
+int yyerror(char *mensaje)
 {
-    fprintf (stderr, "%s\n", mensaje) ;
+    fprintf(stderr, "%s\n", mensaje);
 }
 
-
-int yylex ()
+int yylex()
 {
-    unsigned char c ;
-    int valor ;
+    unsigned char c;
+    int valor;
 
     do {
-         c = getchar () ;
-    } while (c == ' ') ;
+         c = getchar();
+    } while (c == ' ');
 
     if (c >= '0' && c <= '9') {
-         ungetc (c, stdin) ;
-         scanf ("%d", &valor) ;
-         yylval = (double) valor ;
-         return NUMERO ;
+         yylval = c - '0';
+         return DIG;
     }
 
-    return c ;
+    return c;
 }
 
-
-int main ()
+int main()
 {
-    yyparse () ;
+    yyparse();
 }
