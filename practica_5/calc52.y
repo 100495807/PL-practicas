@@ -4,7 +4,7 @@ JORGE MEJIAS DONOSO - ALBERTO MENCHEN MONTERO - 206
 */
 %{                      /* SECCION 1 */
 #include <stdio.h>
-double memoria [26] ;   /* Se define una zona de memoria para las variables */
+double memoria [52] ;   /* Se define una zona de memoria para las variables */
 %}
 %union {                /* El tipo de la pila (del AP) tiene caracter dual */
       double valor ;    /*  - valor numerico real */
@@ -24,8 +24,13 @@ double memoria [26] ;   /* Se define una zona de memoria para las variables */
 
 axioma:       expresion '\n'              { printf ("Expresion=%lf\n", $1) ; } 
                        r_expr
-            | VARIABLE '=' expresion '\n' { memoria [$1] = $3;
-                                            printf ("%c=%lf\n", $1+'A', $3);
+            | VARIABLE '=' expresion '\n' { 
+                memoria[$1] = $3;
+                /* Distinción: si $1 < 26 -> mayúscula, si $1 >= 26 -> minúscula */
+                if ($1 < 26)
+                    printf("%c = %lf\n", ($1 + 'A'), $3);
+                else
+                    printf("%c = %lf\n", ($1 - 26 + 'a'), $3);
                                           }
                        r_expr
             ;
@@ -62,34 +67,6 @@ char *mensaje ;
     fprintf (stderr, "%s en la linea %d\n", mensaje, n_linea) ;
 }
 
-int yylex ()
-{
-    unsigned char c ;
-
-    do {
-         c = getchar () ;
-    } while (c == ' ') ;
-
-    if (c == '.' || (c >= '0' && c <= '9')) {
-         ungetc (c, stdin) ;
-         scanf ("%lf", &yylval.valor) ;
-         return NUMERO ;
-    }
-
-    if (c >= 'A' && c <= 'Z') {
-         yylval.indice = c - 'A' ;  /* resta a c el valor ascii de A */
-         return VARIABLE ;
-    }
-
-    if (c >= 'a' && c <= 'z') {
-         yylval.indice = c - 'a' ;  /* resta a c el valor ascii de a  */
-         return VARIABLE ;
-    }
-
-    if (c == '\n')
-          n_linea++ ;
-    return c;
-}
 
 int main ()
 {
