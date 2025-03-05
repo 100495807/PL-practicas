@@ -1,3 +1,10 @@
+/*
+JORGE MEJIAS DONOSO - ALBERTO MENCHEN MONTERO - 206
+100495807@alumons.uc3m.es 100495692@alumnos.uc3m.es
+
+NO SE HA MODIFICADO NADA DE ESTE CODIGO
+*/
+
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
