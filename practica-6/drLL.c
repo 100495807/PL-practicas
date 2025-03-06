@@ -14,10 +14,10 @@ NO SE HA MODIFICADO NADA DE ESTE CODIGO
 #define T_OPERATOR	1002		
 #define T_VARIABLE  1003  
 
-void PaerseYourGrammar();    	/// Dummy Parser
-void ParseExpresion();
-void ParseInicioExpresion(); 		
-void ParseAxiom () ;			/// Prototype for forward reference 		
+void PaerseYourGrammar();    // Parser principal (dummy)
+void ParseExpresion();       // Función que analiza expresiones
+void ParseInicioExpresion(); // Función que analiza expresiones iniciales
+void ParseAxiom (); 		// Prototipo para referencia anticipada
 
 struct s_tokens {
 	int token ;					// Here we store the current token/literal 
@@ -109,8 +109,8 @@ int rd_lex ()
 
 void rd_syntax_error (int expected, int token, char *output) 
 {
-	fprintf (stderr, "ERROR in line %d ", line_counter) ;
-	fprintf (stderr, output, expected, token) ;
+	fprintf (stderr, "ERROR in line %d ", line_counter) ;	
+	fprintf (stderr, output, expected, token) ;	
 	
 	exit (0) ;
 }
@@ -134,22 +134,23 @@ void MatchSymbol (int expected_token)
 
 // Implementación del parser descendente recursivo
 
+// Analiza el inicio de una expresión
 void ParseInicioExpresion() {
-    if (tokens.token == T_OPERATOR) {
+    if (tokens.token == T_OPERATOR) { // Si el token es un operador, se procesa una operación binaria
         int op = tokens.token_val;
         MatchSymbol(T_OPERATOR);
         
-        printf("(");  
-        ParseExpresion();
-        printf(" %c ", op);  
-        ParseExpresion();
-        printf(")");  
-    } else if (tokens.token == '=') {
+        printf("(");  // Se imprime un paréntesis de apertura para la operación
+        ParseExpresion(); // Se procesa la primera expresión
+        printf(" %c ", op);  // Se imprime el operador
+        ParseExpresion(); // Se procesa la segunda expresión
+        printf(")");  // Se cierra el paréntesis
+    } else if (tokens.token == '=') { // Si el token es un signo igual, se procesa una asignación
         MatchSymbol('=');
         printf("(");
-        printf("%s = ", tokens.variable_name);
+        printf("%s = ", tokens.variable_name); // Se imprime la variable en la asignación
         MatchSymbol(T_VARIABLE);
-        ParseExpresion();
+        ParseExpresion(); // Se procesa la expresión asignada
         printf(")");
     } else {
         rd_syntax_error(-1, tokens.token, "Se esperaba un operador o '=', pero se encontró %d\n");
@@ -157,23 +158,24 @@ void ParseInicioExpresion() {
 }
 
 void ParseExpresion() {
-    if (tokens.token == T_NUMBER) {
+    if (tokens.token == T_NUMBER) { // Si el token es un número, se imprime directamente
         printf("%d", tokens.number);  
         MatchSymbol(T_NUMBER);
-    } else if (tokens.token == T_VARIABLE) {
+    } else if (tokens.token == T_VARIABLE) { // Si el token es una variable, se imprime directamente
         printf("%s", tokens.variable_name);  
         MatchSymbol(T_VARIABLE);
-    } else if (tokens.token == '(') {
+    } else if (tokens.token == '(') { // Si hay un paréntesis de apertura, se procesa como una subexpresión
         MatchSymbol('(');
-        ParseInicioExpresion();
+        ParseInicioExpresion(); // Se analiza el contenido dentro de los paréntesis
         MatchSymbol(')');
     } else {
         rd_syntax_error(-1, tokens.token, "Se esperaba una expresión, pero se encontró %d\n");
     }
 }
 
+// Punto de entrada del parser
 void PaerseYourGrammar() {
-    ParseExpresion();
+    ParseExpresion(); // Llama a la función de análisis de expresiones
 }
 
 
