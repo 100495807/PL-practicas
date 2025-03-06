@@ -14,7 +14,9 @@ NO SE HA MODIFICADO NADA DE ESTE CODIGO
 #define T_OPERATOR	1002		
 #define T_VARIABLE  1003  
 
-void ParseYourGrammar () ; 		/// Dummy Parser
+void PaerseYourGrammar();    	/// Dummy Parser
+void ParseExpresion();
+void ParseInicioExpresion(); 		
 void ParseAxiom () ;			/// Prototype for forward reference 		
 
 struct s_tokens {
@@ -117,7 +119,7 @@ void rd_syntax_error (int expected, int token, char *output)
 void MatchSymbol (int expected_token)
 {
 	if (tokens.token != expected_token) {
-		rd_syntax_error (expected_token, tokens.token, "token %d expected, but %d was read") ;
+		rd_syntax_error (expected_token, tokens.token, "token %d expected, but %d was read\n") ;
 		exit (0) ;
 	} else {
 	 	rd_lex () ; 			/// read next Token
@@ -130,14 +132,55 @@ void MatchSymbol (int expected_token)
 											/// The actual recomendation is to use MatchSymbol in the code rather than theese macros
 
 
-void PaerseYourGrammar ()
-{
+// Implementación del parser descendente recursivo
+
+void ParseInicioExpresion() {
+    if (tokens.token == T_OPERATOR) {
+        int op = tokens.token_val;
+        MatchSymbol(T_OPERATOR);
+        
+        printf("(");  
+        ParseExpresion();
+        printf(" %c ", op);  
+        ParseExpresion();
+        printf(")");  
+    } else if (tokens.token == '=') {
+        MatchSymbol('=');
+        printf("(");
+        printf("%s = ", tokens.variable_name);
+        MatchSymbol(T_VARIABLE);
+        ParseExpresion();
+        printf(")");
+    } else {
+        rd_syntax_error(-1, tokens.token, "Se esperaba un operador o '=', pero se encontró %d\n");
+    }
+}
+
+void ParseExpresion() {
+    if (tokens.token == T_NUMBER) {
+        printf("%d", tokens.number);  
+        MatchSymbol(T_NUMBER);
+    } else if (tokens.token == T_VARIABLE) {
+        printf("%s", tokens.variable_name);  
+        MatchSymbol(T_VARIABLE);
+    } else if (tokens.token == '(') {
+        MatchSymbol('(');
+        ParseInicioExpresion();
+        MatchSymbol(')');
+    } else {
+        rd_syntax_error(-1, tokens.token, "Se esperaba una expresión, pero se encontró %d\n");
+    }
+}
+
+void PaerseYourGrammar() {
+    ParseExpresion();
 }
 
 
 void ParseAxiom () 		
 {									/// Axiom ::= \n
-	PaerseYourGrammar () ;			/// Dummy Parser. Complete this with your design								
+	PaerseYourGrammar () ;			/// Dummy Parser. Complete this with your design	
+	printf ("\n") ;							
 	if (tokens.token == '\n') {	
 		MatchSymbol ('\n') ;
 		printf ("\n") ; 
@@ -169,5 +212,3 @@ int main (int argc, char **argv)
 	
 	exit (0) ;
 }
-
-Explicar
