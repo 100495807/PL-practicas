@@ -182,11 +182,10 @@ void PaerseYourGrammar() {
 
 void ParseAxiom () 		
 {									/// Axiom ::= \n
-	PaerseYourGrammar () ;			/// Dummy Parser. Complete this with your design	
-	printf ("\n") ;							
+	PaerseYourGrammar () ;			/// Dummy Parser. Complete this with your design							
 	if (tokens.token == '\n') {	
-		MatchSymbol ('\n') ;
 		printf ("\n") ; 
+		MatchSymbol ('\n') ;
 	} else { 
 		rd_syntax_error (-1, tokens.token, "-- Unexpected Token (Expected:%d=None, Read:%d) at end of Parsing\n") ;
 	}
