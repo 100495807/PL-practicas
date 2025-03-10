@@ -78,6 +78,7 @@ int rd_lex ()
 	}
 
 	if (isalpha(c)) {  /// Token Variable of type Letter[Digit]? 
+		update_old_token () ;
 		cc = getchar () ;
 		if (isdigit (cc)) {									
 			sprintf (tokens.variable_name, "%c%c", c, cc) ;		/// This copies the LetterDigit name in the variable name
@@ -85,7 +86,7 @@ int rd_lex ()
 			ungetc (cc, stdin) ;									
 			sprintf (tokens.variable_name, "%c", c) ;			/// This copies the single Letter name in the variable name
 		}													
-        update_old_token () ;
+        
 		tokens.token = T_VARIABLE ;
         return (tokens.token) ;	// returns the Token for Number
     } 
