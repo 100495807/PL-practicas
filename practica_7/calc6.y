@@ -21,33 +21,33 @@ int memoria [26] ;      // Se define una zona de memoria para las variables
 %left   SIGNO_UNARIO    //  mayor orden de precedencia 
 %%
                      // SECCION 3: Gramatica - Semantico 
-axioma:       expresion '\n'              { printf ("Expresion=%d\n", $1) ; } 
+axioma:       expresion '\n'              { printf (".\n") ; } 
                        r_expr
-            | VARIABLE '=' expresion '\n' { memoria [$1] = $3;
-                                            printf ("%c=%d\n", $1+'A', $3);
+            | VARIABLE '=' expresion '\n' {
+                                            printf ("%c !\n", $1 + 'A');
                                           }
                        r_expr
             ;
 
 r_expr:                      /* lambda */
-            | axioma
+            | axioma {}
             ;
 
-expresion:    termino                    { $$ = $1 ; }
-            | expresion '+' expresion    { $$ = $1 + $3 ;  }
-            | expresion '-' expresion    { $$ = $1 - $3 ;  }
-            | expresion '*' expresion    { $$ = $1 * $3 ;  }
-            | expresion '/' expresion    { $$ = $1 / $3 ;  }
+expresion:    termino                   
+            | expresion '+' expresion    { printf("+ ");  }
+            | expresion '-' expresion    { printf("- ");  }
+            | expresion '*' expresion    { printf("* ");  }
+            | expresion '/' expresion    { printf("/ ");  }
             ;
 
-termino:      operando                           { $$ = $1 ; }
-            | '+' operando %prec SIGNO_UNARIO    { $$ = $2 ; }
-            | '-' operando %prec SIGNO_UNARIO    { $$ = -$2 ; }
+termino:      operando                           
+            | '+' operando %prec SIGNO_UNARIO    {}
+            | '-' operando %prec SIGNO_UNARIO    { printf("negate") ; }
             ;
 
-operando:     VARIABLE                   { $$ = memoria [$1] ; }
-            | NUMERO                     { $$ = $1 ; }
-            | '(' expresion ')'          { $$ = $2 ; }
+operando:     VARIABLE                   { printf("%c @ ", $1 + 'A'); }
+            | NUMERO                     { printf("%d ", $1);}
+            | '(' expresion ')'          {}
             ;
 
 %%
