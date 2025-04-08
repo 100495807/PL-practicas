@@ -53,45 +53,74 @@ typedef struct s_attr {
 %token WHILE         // identifica el bucle main
 %token IF            // identifica la sentencia if
 %token ELSE          // identifica la sentencia else
+%token PUTS         // identifica la sentencia puts
+%token PRINTF       // identifica la sentencia printf
+%token IGUAL DISTINTO MENORIGUAL MAYORIGUAL 
+%token AND OR
 
 
 
-%right '='                    // es la ultima operacion que se debe realizar
-%left '+' '-'                 // menor orden de precedencia
-%left '*' '/'                 // orden de precedencia intermedio
-%left '<' '>'
-%left UNARY_SIGN              // mayor orden de precedencia
+
+%right '='                        // asignación
+%left OR                          // or lógico
+%left AND                         // and lógico
+%right NOT                         // not lógico
+%left IGUAL DISTINTO             // comparación de igualdad
+%left '<' '>' MENORIGUAL MAYORIGUAL  // comparación numérica
+%left '+' '-'                    // suma y resta
+%left '*' '/'                    // multiplicación y división
+%left UNARY_SIGN                 // signo unario
+
 
 %%                            // Seccion 3 Gramatica - Semantico
 
-programa:      instruccion ';'             { printf("%s\n", $1.code); }
-                r_programa                 { ; }
-            ;
+programa: instrucciones { printf("%s\n", $1.code); }
+         ;
 
-r_programa:
-              /* vacio */                 { ; }
-            | programa                     { ; }
-            ;
 
-instruccion:   sentencia                   { $$ = $1; }
-            | declaracion_variable        { $$ = $1; }
-            | funcion                     { $$ = $1; }
-            ;
 
-sentencia:    IDENTIF '=' expresion       { sprintf(temp, "(setq %s %s)", $1.code, $3.code);
-                                            $$.code = gen_code(temp); }
-            | '@' expresion               { sprintf(temp, "(print %s)", $2.code);
-                                            $$.code = gen_code(temp); }
-            | IF '(' expresion ')' '{' bloque_instrucciones '}' {
-                                            sprintf(temp, "(if %s\n%s\n)", $3.code, $6.code);
-                                            $$.code = gen_code(temp); }
-            | IF '(' expresion ')' '{' bloque_instrucciones '}' ELSE '{' bloque_instrucciones '}'
-                                          { sprintf(temp, "(if %s\n%s\n%s\n)", $3.code, $6.code, $10.code);
-                                            $$.code = gen_code(temp); }
-            | WHILE '(' expresion ')' '{' bloque_instrucciones '}' {
-                                            sprintf(temp, "(while %s\n%s\n)", $3.code, $6.code);
-                                            $$.code = gen_code(temp); }
-            ;
+instrucciones:
+          instruccion_sep { $$ = $1; }
+        | instrucciones instruccion_sep { sprintf(temp, "%s\n%s", $1.code, $2.code);
+                                           $$.code = gen_code(temp); }
+        ;
+
+instruccion_sep:
+         sentencia_simple ';'   { $$ = $1; }
+       | sentencia_bloque       { $$ = $1; }
+       | declaracion_variable ';' { $$ = $1; }
+       | funcion                { $$ = $1; }
+       ;
+
+
+sentencia_simple:
+                    IDENTIF '=' expresion           { sprintf(temp, "(setq %s %s)", $1.code, $3.code);
+                                                        $$.code = gen_code(temp); }
+                    | '@' expresion                   { sprintf(temp, "(print %s)", $2.code);
+                                                        $$.code = gen_code(temp); }
+                    | PUTS '(' STRING ')'             { sprintf(temp, "(print \"%s\")", $3.code);
+                                                        $$.code = gen_code(temp); }
+                    | PRINTF '(' STRING ',' lista_elementos ')' {
+                                                        $$.code = $5.code;
+                                                        }
+                    ;
+
+sentencia_bloque:
+                    IF '(' expresion ')' '{' bloque_instrucciones '}' {
+                        sprintf(temp, "(if %s\n%s\n)", $3.code, $6.code);
+                        $$.code = gen_code(temp);
+                    }
+                    | IF '(' expresion ')' '{' bloque_instrucciones '}' ELSE '{' bloque_instrucciones '}' {
+                        sprintf(temp, "(if %s\n%s\n%s\n)", $3.code, $6.code, $10.code);
+                        $$.code = gen_code(temp);
+                    }
+                    | WHILE '(' expresion ')' '{' bloque_instrucciones '}' {
+                        sprintf(temp, "(loop while %s do\n%s)", $3.code, $6.code);
+                        $$.code = gen_code(temp);
+                    }
+                    ;
+
+
 
 declaracion_variable:
               INTEGER lista_declaracion   { $$.code = $2.code; }
@@ -123,6 +152,20 @@ expresion:      termino                   { $$ = $1; }
                                             $$.code = gen_code(temp); }
             | expresion '<' expresion     { sprintf(temp, "(< %s %s)", $1.code, $3.code);
                                             $$.code = gen_code(temp); }
+            | expresion IGUAL expresion      { sprintf(temp, "(= %s %s)", $1.code, $3.code);
+                                               $$.code = gen_code(temp); }
+            | expresion DISTINTO expresion   { sprintf(temp, "(/= %s %s)", $1.code, $3.code);
+                                               $$.code = gen_code(temp); }
+            | expresion MENORIGUAL expresion { sprintf(temp, "(<= %s %s)", $1.code, $3.code);
+                                               $$.code = gen_code(temp); }
+            | expresion MAYORIGUAL expresion { sprintf(temp, "(>= %s %s)", $1.code, $3.code);
+                                               $$.code = gen_code(temp); }
+            | expresion AND expresion    { sprintf(temp, "(and %s %s)", $1.code, $3.code);
+                                           $$.code = gen_code(temp); }
+            | expresion OR expresion     { sprintf(temp, "(or %s %s)", $1.code, $3.code);
+                                           $$.code = gen_code(temp); }
+            | '!' expresion %prec UNARY_SIGN { sprintf(temp, "(not %s)", $2.code);
+                                   $$.code = gen_code(temp); }
             ;
 
 termino:        operando                  { $$ = $1; }                          
@@ -140,6 +183,18 @@ operando:       IDENTIF                   { sprintf(temp, "%s", $1.code);
             | '(' expresion ')'           { $$ = $2; }
             ;
 
+lista_elementos:    elemento { $$.code = $1.code; }
+            | lista_elementos ',' elemento { sprintf(temp, "%s\n%s", $1.code, $3.code);
+                                            $$.code = gen_code(temp); }
+            ;
+
+elemento:           expresion { sprintf(temp, "(princ %s)", $1.code);
+                                 $$.code = gen_code(temp); }
+                    | STRING { sprintf(temp, "(princ \"%s\")", $1.code);
+                                 $$.code = gen_code(temp); }
+            ;
+
+
 // FASE 2: funcion main
 funcion:
     MAIN '(' ')' '{' bloque_instrucciones '}' {
@@ -148,18 +203,7 @@ funcion:
     }
     ;
 
-bloque_instrucciones:
-    bloque_instrucciones instruccion ';' {
-        sprintf(temp, "%s\n%s", $1.code, $2.code);
-        $$.code = gen_code(temp);
-    }
-  | instruccion ';' {
-        $$.code = $1.code;
-    }
-  | instruccion {
-        $$.code = $1.code;
-    }
-  ;
+bloque_instrucciones: instrucciones ;
 
 %%                            // SECCION 4    Codigo en C
 
@@ -218,6 +262,14 @@ t_keyword keywords [] = { // define las palabras reservadas y los
     "if",          IF,
     "else",        ELSE,
     "while",       WHILE,
+    "puts",        PUTS,
+    "printf",      PRINTF,
+    "==",          IGUAL,
+    "!=",          DISTINTO,
+    "<=",          MENORIGUAL,
+    ">=",          MAYORIGUAL,
+    "&&",          AND,
+    "||",          OR,
     NULL,          0               // para marcar el fin de la tabla
 } ;
 

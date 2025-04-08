@@ -1,0 +1,25 @@
+int a = 3, b, c = 0;
+
+main() {
+  puts("INICIO");
+
+  b = 5;
+  c = a + b * 2;
+
+  if (c >= 10 && !(a == 4)) {
+    puts("CONDICION 1 OK");
+  } else {
+    puts("CONDICION 1 FALLA");
+  }
+
+  if (a != b || c < 15) {
+    printf("Resultado: ", c);
+  }
+
+  while (c > 0) {
+    printf("c vale ", c);
+    c = c - 1;
+  }
+
+  puts("FIN");
+}
