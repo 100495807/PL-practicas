@@ -1,4 +1,4 @@
-# Makefile para compilar el traductor trad1
+# Makefile para compilar el traductor trad2
 
 trad2: trad2.tab.c
 	gcc -o trad2 trad2.tab.c
