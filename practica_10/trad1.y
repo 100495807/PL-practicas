@@ -64,18 +64,34 @@ typedef struct s_attr {
 
 %%                            // Seccion 3 Gramatica - Semantico
 
-programa:      instruccion ';'             { printf("%s\n", $1.code); }
-                r_programa                 { ; }
-            ;
+programa:
+    declaraciones funciones {
+        sprintf(temp, "%s\n%s", $1.code, $2.code);
+        printf("%s\n", temp);
+    }
+;
 
-r_programa:
-              /* vacio */                 { ; }
-            | programa                     { ; }
-            ;
+
+declaraciones:
+      /* vacío */                    { $$.code = gen_code(""); }
+    | declaraciones declaracion_variable ';' {
+        sprintf(temp, "%s\n%s", $1.code, $2.code);
+        $$.code = gen_code(temp);
+      }
+    ;
+
+funciones:
+      funcion_main                      { $$.code = $1.code; }
+    | funciones funcion_secundaria      {
+        sprintf(temp, "%s\n%s", $1.code, $2.code);
+        $$.code = gen_code(temp);
+      }
+    ;
+
+
 
 instruccion:   sentencia                   { $$ = $1; }
             | declaracion_variable        { $$ = $1; }
-            | funcion                     { $$ = $1; }
             ;
 
 sentencia:    IDENTIF '=' expresion       { sprintf(temp, "(setq %s %s)", $1.code, $3.code);
@@ -141,12 +157,24 @@ operando:       IDENTIF                   { sprintf(temp, "%s", $1.code);
             ;
 
 // FASE 2: funcion main
-funcion:
+funcion_main:
     MAIN '(' ')' '{' bloque_instrucciones '}' {
         sprintf(temp, "(defun main ()\n%s\n)\n(main)", $5.code);
         $$.code = gen_code(temp);
     }
     ;
+
+funcion_secundaria:
+    IDENTIF '(' ')' '{' bloque_instrucciones '}' {
+        if (strcmp($1.code, "main") == 0) {
+            yyerror("Error: solo puede haber una funcion main");
+            exit(1);
+        }
+        sprintf(temp, "(defun %s ()\n%s\n)", $1.code, $5.code);
+        $$.code = gen_code(temp);
+    }
+    ;
+
 
 bloque_instrucciones:
     bloque_instrucciones instruccion ';' {

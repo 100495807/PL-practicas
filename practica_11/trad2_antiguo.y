@@ -19,18 +19,7 @@ char *gen_code (char *) ;
 char *int_to_string (int) ;
 char *char_to_string (char) ;
 
-char temp [4096] ;
-char current_function[256] = "main"; // Nombre de la función actual
-int inside_main = 0; // 0 fuera de main, 1 dentro
-
-int is_local(char *name);
-void insert_local(char *name);
-void reset_local_table();
-char *decorate(char *name);
-int in_function_scope();  // ← declaración anticipada
-
-
-
+char temp [2048] ;
 
 // Abstract Syntax Tree (AST) Node Structure
 
@@ -62,14 +51,12 @@ typedef struct s_attr {
 %token STRING
 %token MAIN          // identifica el comienzo del proc. main
 %token WHILE         // identifica el bucle main
-%token FOR          // identifica el bucle for
 %token IF            // identifica la sentencia if
 %token ELSE          // identifica la sentencia else
 %token PUTS         // identifica la sentencia puts
 %token PRINTF       // identifica la sentencia printf
 %token IGUAL DISTINTO MENORIGUAL MAYORIGUAL 
 %token AND OR
-%token RETURN
 
 
 
@@ -81,80 +68,41 @@ typedef struct s_attr {
 %left IGUAL DISTINTO             // comparación de igualdad
 %left '<' '>' MENORIGUAL MAYORIGUAL  // comparación numérica
 %left '+' '-'                    // suma y resta
-%left '*' '/' '%'                   // multiplicación y división
+%left '*' '/'                    // multiplicación y división
 %left UNARY_SIGN                 // signo unario
 
 
 %%                            // Seccion 3 Gramatica - Semantico
 
-programa:
-      declaraciones funciones
-    | funciones ;
+programa: instrucciones { printf("%s\n", $1.code); }
+         ;
 
-
-declaraciones:
-      declaraciones declaracion_variable ';'
-    | declaracion_variable ';' ;
-
-funciones:
-      funciones funcion
-    | funcion ;
 
 
 instrucciones:
-      instruccion_sep                { $$ = $1; }
-    | instrucciones instruccion_sep { sprintf(temp, "%s\n%s", $1.code, $2.code);
-                                      $$.code = gen_code(temp); }
-    ;
-
-
-instruccion_sep:
-            sentencia_simple ';'   { $$ = $1; }
-        | sentencia_bloque         { $$ = $1; }
-        | declaracion_variable ';' { $$ = $1; }
-        | RETURN ';'               { sprintf(temp, "(return)"); $$.code = gen_code(temp); }
-        | RETURN expresion ';' {
-            sprintf(temp, "(return-from %s %s)", current_function, $2.code);
-            $$.code = gen_code(temp); }
-        | funcion                  { $$ = $1; }
-        | IF '(' expresion ')' sentencia_simple ';' {
-            sprintf(temp, "(if %s\n%s)", $3.code, $5.code);
-            $$.code = gen_code(temp);
-        }
+          instruccion_sep { $$ = $1; }
+        | instrucciones instruccion_sep { sprintf(temp, "%s\n%s", $1.code, $2.code);
+                                           $$.code = gen_code(temp); }
         ;
 
-
+instruccion_sep:
+         sentencia_simple ';'   { $$ = $1; }
+       | sentencia_bloque       { $$ = $1; }
+       | declaracion_variable ';' { $$ = $1; }
+       | funcion                { $$ = $1; }
+       ;
 
 
 sentencia_simple:
-                    IDENTIF '[' expresion ']' '=' expresion { sprintf(temp, "(setf (aref %s %s) %s)", $1.code, $3.code, $6.code);
+                    IDENTIF '=' expresion           { sprintf(temp, "(setq %s %s)", $1.code, $3.code);
                                                         $$.code = gen_code(temp); }
-                    | IDENTIF '=' expresion {
-                                                sprintf(temp, "(setf %s %s)", decorate($1.code), $3.code);
-                                                $$.code = gen_code(temp); }
-
                     | '@' expresion                   { sprintf(temp, "(print %s)", $2.code);
                                                         $$.code = gen_code(temp); }
                     | PUTS '(' STRING ')'             { sprintf(temp, "(print \"%s\")", $3.code);
                                                         $$.code = gen_code(temp); }
                     | PRINTF '(' STRING ',' lista_elementos ')' {
-    sprintf(temp, "(princ \"%s\")\n%s", $3.code, $5.code);
-    $$.code = gen_code(temp);
-}
-
-                    | IDENTIF '(' ')'           { sprintf(temp, "(%s)", $1.code);
-                                                $$.code = gen_code(temp); }
-                    | IDENTIF '(' lista_argumentos ')' { sprintf(temp, "(%s %s)", $1.code, $3.code);
-                                                        $$.code = gen_code(temp); }
-                    | RETURN {
-                                            sprintf(temp, "(return)");
-                                            $$.code = gen_code(temp);
-                                        }
-                                        | RETURN expresion {
-                                            sprintf(temp, "(return-from %s %s)", current_function, $2.code);
-                                            $$.code = gen_code(temp);
-                                        }
-
+                                                        $$.code = $5.code;
+                                                        }
                     ;
 
 sentencia_bloque:
@@ -163,85 +111,33 @@ sentencia_bloque:
                         $$.code = gen_code(temp);
                     }
                     | IF '(' expresion ')' '{' bloque_instrucciones '}' ELSE '{' bloque_instrucciones '}' {
-                            char temp_then[2048], temp_else[2048], temp_if[8192];
-                            if (strchr($6.code, '\n') != NULL)
-                                sprintf(temp_then, "(progn\n%s)", $6.code);
-                            else
-                                sprintf(temp_then, "%s", $6.code);
-                            if (strchr($10.code, '\n') != NULL)
-                                sprintf(temp_else, "(progn\n%s)", $10.code);
-                            else
-                                sprintf(temp_else, "%s", $10.code);
-
-                            sprintf(temp_if, "(if %s\n%s\n%s)", $3.code, temp_then, temp_else);
-                            $$.code = gen_code(temp_if);
-                        }
+                        sprintf(temp, "(if %s\n%s\n%s\n)", $3.code, $6.code, $10.code);
+                        $$.code = gen_code(temp);
+                    }
                     | WHILE '(' expresion ')' '{' bloque_instrucciones '}' {
                         sprintf(temp, "(loop while %s do\n%s)", $3.code, $6.code);
                         $$.code = gen_code(temp);
                     }
-                    | FOR '(' sentencia_simple ';' expresion ';' sentencia_simple ')' '{' bloque_instrucciones '}' {
-                            sprintf(temp, "%s\n(loop while %s do\n%s\n%s)", $3.code, $5.code, $10.code, $7.code);  
-                            $$.code = gen_code(temp);} 
                     ;
 
 
 
 declaracion_variable:
-    INTEGER lista_declaracion {
-        printf("%s\n", $2.code); 
-        $$.code = gen_code("");    // no acumular, ya está impreso
-    }
-    ;
+              INTEGER lista_declaracion   { $$.code = $2.code; }
+            ;
 
-
-lista_declaracion:  IDENTIF {
-                            printf("Declarando variable: %s (inside_main = %d)\n", $1.code, inside_main);
-                            if (in_function_scope()) {
-                                insert_local($1.code);
-                                sprintf(temp, "(setq %s_%s 0)", current_function, $1.code);
-                            } else {
-                                sprintf(temp, "(setq %s 0)", $1.code);
-                            }
-                            $$.code = gen_code(temp);
-                        }
-                    | IDENTIF '=' NUMBER {
-                        if (in_function_scope()) {
-                            insert_local($1.code);
-                            sprintf(temp, "(setq %s_%s 0)", current_function, $1.code);
-                        } else {
-                            sprintf(temp, "(setq %s %d)", $1.code, $3.value);
-                        }
-                        $$.code = gen_code(temp);
-                    }
-                    | lista_declaracion ',' IDENTIF {
-                        if (in_function_scope()) {
-                            insert_local($3.code);
-                            sprintf(temp, "(setq %s_%s 0)", current_function, $1.code);
-                        } else {
-                            sprintf(temp, "%s\n(setq %s 0)", $1.code, $3.code);
-                        }
-                        $$.code = gen_code(temp);
-                    }
-                    | lista_declaracion ',' IDENTIF '=' NUMBER {
-                        if (in_function_scope()) {
-                            insert_local($3.code);
-                            sprintf(temp, "(setq %s_%s 0)", current_function, $1.code);
-                        } else {
-                            sprintf(temp, "%s\n(setq %s %d)", $1.code, $3.code, $5.value);
-                        }
-                        $$.code = gen_code(temp);
-                    }
-
-
-lista_parametros:
-      INTEGER IDENTIF                 { $$.code = $2.code; }
-    | lista_parametros ',' INTEGER IDENTIF {
-        sprintf(temp, "%s %s", $1.code, $4.code);
-        $$.code = gen_code(temp);
-    }
-  ;
-
+lista_declaracion
+            : IDENTIF                     { sprintf(temp, "(setq %s 0)", $1.code);
+                                            $$.code = gen_code(temp); }
+            | IDENTIF '=' NUMBER          { sprintf(temp, "(setq %s %d)", $1.code, $3.value);
+                                            $$.code = gen_code(temp); }
+            | lista_declaracion ',' IDENTIF
+                                          { sprintf(temp, "%s\n(setq %s 0)", $1.code, $3.code);
+                                            $$.code = gen_code(temp); }
+            | lista_declaracion ',' IDENTIF '=' NUMBER
+                                          { sprintf(temp, "%s\n(setq %s %d)", $1.code, $3.code, $5.value);
+                                            $$.code = gen_code(temp); }
+            ;
 
 expresion:      termino                   { $$ = $1; }
             | expresion '+' expresion     { sprintf(temp, "(+ %s %s)", $1.code, $3.code);
@@ -251,8 +147,6 @@ expresion:      termino                   { $$ = $1; }
             | expresion '*' expresion     { sprintf(temp, "(* %s %s)", $1.code, $3.code);
                                             $$.code = gen_code(temp); }
             | expresion '/' expresion     { sprintf(temp, "(/ %s %s)", $1.code, $3.code);
-                                            $$.code = gen_code(temp); }
-            | expresion '%' expresion { sprintf(temp, "(mod %s %s)", $1.code, $3.code);
                                             $$.code = gen_code(temp); }
             | expresion '>' expresion     { sprintf(temp, "(> %s %s)", $1.code, $3.code);
                                             $$.code = gen_code(temp); }
@@ -282,32 +176,12 @@ termino:        operando                  { $$ = $1; }
                                             $$.code = gen_code(temp); }    
             ;
 
-operando:
-      IDENTIF {
-        sprintf(temp, "%s", decorate($1.code));
-        $$.code = gen_code(temp);
-      }
-    | NUMBER {
-        sprintf(temp, "%d", $1.value);
-        $$.code = gen_code(temp);
-      }
-    | '(' expresion ')' {
-        $$ = $2;
-      }
-    | IDENTIF '(' ')' {
-        sprintf(temp, "(%s)", $1.code); // funciones no se decoran
-        $$.code = gen_code(temp);
-      }
-    | IDENTIF '(' lista_argumentos ')' {
-        sprintf(temp, "(%s %s)", $1.code, $3.code);
-        $$.code = gen_code(temp);
-      }
-    | IDENTIF '[' expresion ']' {
-        sprintf(temp, "(aref %s %s)", decorate($1.code), $3.code);
-        $$.code = gen_code(temp);
-      }
-    ;
-
+operando:       IDENTIF                   { sprintf(temp, "%s", $1.code);
+                                            $$.code = gen_code(temp); }
+            | NUMBER                      { sprintf(temp, "%d", $1.value);
+                                            $$.code = gen_code(temp); }
+            | '(' expresion ')'           { $$ = $2; }
+            ;
 
 lista_elementos:    elemento { $$.code = $1.code; }
             | lista_elementos ',' elemento { sprintf(temp, "%s\n%s", $1.code, $3.code);
@@ -320,72 +194,14 @@ elemento:           expresion { sprintf(temp, "(princ %s)", $1.code);
                                  $$.code = gen_code(temp); }
             ;
 
-lista_argumentos:
-      expresion               { $$.code = $1.code; }
-    | lista_argumentos ',' expresion { sprintf(temp, "%s %s", $1.code, $3.code);
-                                       $$.code = gen_code(temp); }
-    ;
-
-
 
 // FASE 2: funcion main
 funcion:
-        MAIN '(' ')' '{' {
-        reset_local_table();
-        strcpy(current_function, "main");
-        inside_main = 1;
+    MAIN '(' ')' '{' bloque_instrucciones '}' {
+        sprintf(temp, "(defun main ()\n%s\n)\n(main)", $5.code);
+        $$.code = gen_code(temp);
     }
-        bloque_instrucciones '}'
-        {
-                inside_main = 0;
-                char *cuerpo = $5.code;
-                snprintf(temp, sizeof(temp), "(defun main ()\n%s\n)", cuerpo);
-                printf("%s\n", temp);
-                $$.code = gen_code("");
-            }
-
-        | INTEGER IDENTIF '(' lista_parametros ')' '{' { reset_local_table();
-                            strcpy(current_function, $2.code); }
-                            bloque_instrucciones '}' {
-                            inside_main = 0;
-                            char *cuerpo = $8.code;
-                            char *ultima_linea = strrchr(cuerpo, '\n');
-
-                            if (ultima_linea && strncmp(ultima_linea + 1, "(return ", 8) == 0) {
-                            *ultima_linea = '\0';
-                            char expr[2048];
-                            sscanf(ultima_linea + 8, "%[^)]", expr);
-                            snprintf(temp, sizeof(temp), "(defun %s (%s)\n%s\n%s)", $2.code, $4.code, cuerpo, expr);
-                            } else {    
-                            snprintf(temp, sizeof(temp), "(defun %s (%s)\n%s\n)", $2.code, $4.code, cuerpo); }
-
-                printf("%s\n", temp);
-                $$.code = gen_code("");
-            }
-
-        | INTEGER IDENTIF '(' ')' '{' bloque_instrucciones '}' {
-                reset_local_table();
-                strcpy(current_function, $2.code);
-                char *cuerpo = $6.code;
-                char *ultima_linea = strrchr(cuerpo, '\n');
-
-                if (ultima_linea && strncmp(ultima_linea + 1, "(return ", 8) == 0) {
-                    *ultima_linea = '\0';
-                    char expr[2048];
-                    sscanf(ultima_linea + 8, "%[^)]", expr);
-                    snprintf(temp, sizeof(temp), "(defun %s ()\n%s\n%s)", $2.code, cuerpo, expr);
-                } else {
-                    snprintf(temp, sizeof(temp), "(defun %s ()\n%s\n)", $2.code, cuerpo);
-                }
-
-                printf("%s\n", temp);
-                $$.code = gen_code("");
-            }
-        ;
-
-
-
-
+    ;
 
 bloque_instrucciones: instrucciones ;
 
@@ -446,7 +262,6 @@ t_keyword keywords [] = { // define las palabras reservadas y los
     "if",          IF,
     "else",        ELSE,
     "while",       WHILE,
-    "for",         FOR,
     "puts",        PUTS,
     "printf",      PRINTF,
     "==",          IGUAL,
@@ -455,7 +270,6 @@ t_keyword keywords [] = { // define las palabras reservadas y los
     ">=",          MAYORIGUAL,
     "&&",          AND,
     "||",          OR,
-    "return",      RETURN,
     NULL,          0               // para marcar el fin de la tabla
 } ;
 
@@ -477,48 +291,6 @@ t_keyword *search_keyword (char *symbol_name)
 
     return NULL ;
 }
-
-
-#define MAX_LOCAL_VARS 100
-char *local_table[MAX_LOCAL_VARS];
-int local_count = 0;
-
-void reset_local_table() {
-    local_count = 0;
-}
-
-int is_local(char *name) {
-    for (int i = 0; i < local_count; i++) {
-        if (strcmp(name, local_table[i]) == 0)
-            return 1;
-    }
-    return 0;
-}
-
-int in_function_scope() {
-    return inside_main != 0;
-}
-
-
-
-char* decorate(char *name) {
-    static char decorated[512];
-    int local = is_local(name);
-    if (local) {
-        snprintf(decorated, sizeof(decorated), "%s_%s", current_function, name);
-        return decorated;
-    }
-    return name;
-}
-
-void insert_local(char *name) {
-    if (local_count < MAX_LOCAL_VARS) {
-        local_table[local_count++] = gen_code(name);
-        printf("insert_local: %s\n", name);  // DEBUG
-    }
-}
-
-
 
  
 /***************************************************************************/

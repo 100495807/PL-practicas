@@ -60,19 +60,20 @@ extern int yydebug;
     STRING = 261,                  /* STRING  */
     MAIN = 262,                    /* MAIN  */
     WHILE = 263,                   /* WHILE  */
-    IF = 264,                      /* IF  */
-    ELSE = 265,                    /* ELSE  */
-    PUTS = 266,                    /* PUTS  */
-    PRINTF = 267,                  /* PRINTF  */
-    IGUAL = 268,                   /* IGUAL  */
-    DISTINTO = 269,                /* DISTINTO  */
-    MENORIGUAL = 270,              /* MENORIGUAL  */
-    MAYORIGUAL = 271,              /* MAYORIGUAL  */
-    AND = 272,                     /* AND  */
-    OR = 273,                      /* OR  */
-    RETURN = 274,                  /* RETURN  */
-    NOT = 275,                     /* NOT  */
-    UNARY_SIGN = 276               /* UNARY_SIGN  */
+    FOR = 264,                     /* FOR  */
+    IF = 265,                      /* IF  */
+    ELSE = 266,                    /* ELSE  */
+    PUTS = 267,                    /* PUTS  */
+    PRINTF = 268,                  /* PRINTF  */
+    IGUAL = 269,                   /* IGUAL  */
+    DISTINTO = 270,                /* DISTINTO  */
+    MENORIGUAL = 271,              /* MENORIGUAL  */
+    MAYORIGUAL = 272,              /* MAYORIGUAL  */
+    AND = 273,                     /* AND  */
+    OR = 274,                      /* OR  */
+    RETURN = 275,                  /* RETURN  */
+    NOT = 276,                     /* NOT  */
+    UNARY_SIGN = 277               /* UNARY_SIGN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
