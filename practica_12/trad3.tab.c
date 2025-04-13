@@ -601,8 +601,8 @@ static const yytype_int16 yyrline[] =
      191,   198,   208,   217,   226,   238,   239,   246,   247,   249,
      251,   253,   255,   257,   259,   261,   263,   265,   267,   269,
      271,   273,   277,   278,   280,   286,   290,   294,   297,   301,
-     305,   312,   313,   317,   319,   324,   325,   333,   333,   346,
-     346,   365,   389
+     305,   312,   313,   317,   319,   324,   325,   333,   333,   347,
+     347,   366,   390
 };
 #endif
 
@@ -1778,12 +1778,13 @@ yyreduce:
                          {
         reset_local_table();
         strcpy(current_function, "main");
+        inside_main = 1;
     }
-#line 1783 "trad3.tab.c"
+#line 1784 "trad3.tab.c"
     break;
 
   case 68: /* funcion: MAIN '(' ')' '{' @1 bloque_instrucciones '}'  */
-#line 338 "trad3.y"
+#line 339 "trad3.y"
         {
                 inside_main = 0;
                 char *cuerpo = yyvsp[-2].code;
@@ -1791,18 +1792,18 @@ yyreduce:
                 printf("%s\n", temp);
                 yyval.code = gen_code("");
             }
-#line 1795 "trad3.tab.c"
+#line 1796 "trad3.tab.c"
     break;
 
   case 69: /* $@2: %empty  */
-#line 346 "trad3.y"
+#line 347 "trad3.y"
                                                        { reset_local_table();
                             strcpy(current_function, yyvsp[-4].code); }
-#line 1802 "trad3.tab.c"
+#line 1803 "trad3.tab.c"
     break;
 
   case 70: /* funcion: INTEGER IDENTIF '(' lista_parametros ')' '{' $@2 bloque_instrucciones '}'  */
-#line 348 "trad3.y"
+#line 349 "trad3.y"
                                                      {
                             inside_main = 0;
                             char *cuerpo = yyvsp[-1].code;
@@ -1819,11 +1820,11 @@ yyreduce:
                 printf("%s\n", temp);
                 yyval.code = gen_code("");
             }
-#line 1823 "trad3.tab.c"
+#line 1824 "trad3.tab.c"
     break;
 
   case 71: /* funcion: INTEGER IDENTIF '(' ')' '{' bloque_instrucciones '}'  */
-#line 365 "trad3.y"
+#line 366 "trad3.y"
                                                                {
                 reset_local_table();
                 strcpy(current_function, yyvsp[-5].code);
@@ -1842,11 +1843,11 @@ yyreduce:
                 printf("%s\n", temp);
                 yyval.code = gen_code("");
             }
-#line 1846 "trad3.tab.c"
+#line 1847 "trad3.tab.c"
     break;
 
 
-#line 1850 "trad3.tab.c"
+#line 1851 "trad3.tab.c"
 
       default: break;
     }
@@ -2039,7 +2040,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 391 "trad3.y"
+#line 392 "trad3.y"
                             // SECCION 4    Codigo en C
 
 int n_line = 1 ;
@@ -2147,8 +2148,9 @@ int is_local(char *name) {
 }
 
 int in_function_scope() {
-    return strcmp(current_function, "") != 0;
+    return inside_main != 0;
 }
+
 
 
 char* decorate(char *name) {
