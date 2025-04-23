@@ -102,14 +102,14 @@ typedef struct s_attr {
 %left IGUAL DISTINTO                                // comparación de igualdad
 %left '<' '>' MENORIGUAL MAYORIGUAL                 // comparación numérica
 %left '+' '-'                                       // suma y resta
-%left '*' '/'                                       // multiplicación y división
+%left '*' '/' '%'                                   // multiplicación, división y módulo
 %left UNARY_SIGN                                    // signo unario
 
 
 %%                            // Seccion 3 Gramatica - Semantico
 
 programa: 
-            vares_globales funciones { 
+            vars_globales conjunto_funciones { 
                 printf("%s\n%s\n", $1.code, $2.code); 
                 } 
             ;
@@ -123,12 +123,12 @@ vars_globales:
             ;
 
 definicion_var_global:
-            INTEGER lista_declaracion_global { 
+            INTEGER conjunto_vars_global { 
                 $$.code = $2.code; 
                 }
             ;
 
-lista_declaracion_global:
+conjunto_vars_global:
             IDENTIF { 
                 sprintf(temp, "(setq %s 0)", $1.code); 
                 $$.code = gen_code(temp); 
@@ -137,36 +137,45 @@ lista_declaracion_global:
                 sprintf(temp, "(setq %s %d)", 
                 $1.code, $3.value); $$.code = gen_code(temp); 
                 }
-            | lista_declaracion_global ',' IDENTIF { 
+            | conjunto_vars_global ',' IDENTIF { 
                 sprintf(temp, "%s\n(setq %s 0)", $1.code, $3.code); 
                 $$.code = gen_code(temp); 
                 }
-            | lista_declaracion_global ',' IDENTIF '=' NUMBER { 
+            | conjunto_vars_global ',' IDENTIF '=' NUMBER { 
                 sprintf(temp, "%s\n(setq %s %d)", $1.code, $3.code, $5.value); 
                 $$.code = gen_code(temp); 
                 }
             ;
-
-funciones:
-            funcion_main { 
-                $$ = $1; 
-                }
-            | otras_funciones funcion_main {
-              sprintf(temp, "%s\n%s", $1.code, $2.code);
-              $$.code = gen_code(temp);
+conjunto_funciones: 
+            funiones_con_main { 
+                $$.code = $1.code; 
                 }
             ;
 
-otras_funciones:
-            /* vacío */ { $$.code = gen_code(""); }
-            | otras_funciones funcion {
+funiones_con_main:
+            funcion_principal { 
+                $$.code = $1.code; 
+                }
+            | funciones_auxiliares funcion_principal {
                 sprintf(temp, "%s\n%s", $1.code, $2.code);
                 $$.code = gen_code(temp);
                 }
             ;
 
-funcion:
-            IDENTIF '(' parametros ')' '{' instrucciones '}' {
+funciones_auxiliares:
+            definicion_funcion { 
+                $$.code = $1.code; 
+                }
+            | funciones_auxiliares definicion_funcion {
+                sprintf(temp, "%s\n%s", $1.code, $2.code);
+                $$.code = gen_code(temp);
+                }
+            ;
+
+
+
+definicion_funcion:
+            IDENTIF '(' argumentos_funcion ')' '{' bloque_sentencias '}' {
                 funcion_actual = $1.code;
                 // Verificar si la última instrucción es un return
                 char *last_instr = strrchr($6.code, '\n');
@@ -185,30 +194,30 @@ funcion:
                 }
             ;
 
-parametros:
+argumentos_funcion:
             /* vacío */ { $$.code = gen_code(""); }
-            | lista_parametros { 
+            | conjunto_parametros { 
                 $$.code = $1.code; 
                 }
             ;
 
-lista_parametros:
-            parametro { $$.code = $1.code; }
-            | lista_parametros ',' parametro { 
+conjunto_parametros:
+            entrada_funcion { $$.code = $1.code; }
+            | conjunto_parametros ',' entrada_funcion { 
                 sprintf(temp, "%s %s", $1.code, $3.code);
                 $$.code = gen_code(temp); 
                 }
             ;
 
-parametro:
+entrada_funcion:
             INTEGER IDENTIF { 
                 sprintf(temp, "%s", $2.code);
                 $$.code = gen_code(temp);
                 }
             ;
 
-funcion_main:
-            MAIN '(' ')' '{' instrucciones '}' {
+funcion_principal:
+            MAIN '(' ')' '{' bloque_sentencias '}' {
                 funcion_actual = strdup("main");
                 vacial_variables_locales();  // Limpiar tabla al entrar
                 sprintf(temp, "(defun main ()\n%s\n)", $5.code);
@@ -218,18 +227,17 @@ funcion_main:
             ;
 
 
-
-instrucciones:
-            instruccion_sep { 
+bloque_sentencias:
+            sentencia_sep { 
                 $$ = $1; 
                 }
-            | instrucciones instruccion_sep { 
+            | bloque_sentencias sentencia_sep { 
                 sprintf(temp, "%s\n%s", $1.code, $2.code);
                 $$.code = gen_code(temp); 
                 }
             ;
 
-instruccion_sep:
+sentencia_sep:
             sentencia_simple ';' { 
                 $$ = $1; 
                 }
@@ -276,16 +284,16 @@ sentencia_simple:
             ;
 
 sentencia_bloque:
-            if_sin_else
+            if_solo
 
-            | if_con_else
+            | if_else
 
-            | WHILE '(' expresion ')' '{' instrucciones '}' {
+            | WHILE '(' expresion ')' '{' bloque_sentencias '}' {
                 sprintf(temp, "(loop while %s do\n%s)", $3.code, $6.code);
                 $$.code = gen_code(temp);
             }
 
-            | FOR '(' inicializacion ';' expresion ';' incremento ')' '{' instrucciones '}' {
+            | FOR '(' asignacion_inicial ';' expresion ';' aumento ')' '{' bloque_sentencias '}' {
                 sprintf(temp, "(progn\n%s\n(loop while %s do\n(progn\n%s\n%s)))", 
                         $3.code, $5.code, $10.code, $7.code);
                 $$.code = gen_code(temp);
@@ -293,8 +301,8 @@ sentencia_bloque:
             ;
 
 
-if_sin_else:
-            IF '(' expresion ')' '{' instrucciones '}' {
+if_solo:
+            IF '(' expresion ')' '{' bloque_sentencias '}' {
                 if (strchr($6.code, '\n') != NULL) {
                     sprintf(temp, "(if %s\n(progn %s))", $3.code, $6.code);
                 } else {
@@ -304,8 +312,8 @@ if_sin_else:
                 }
             ;
 
-if_con_else:
-            IF '(' expresion ')' '{' instrucciones '}' ELSE '{' instrucciones '}' {
+if_else:
+            IF '(' expresion ')' '{' bloque_sentencias '}' ELSE '{' bloque_sentencias '}' {
                 if (strchr($6.code, '\n') != NULL && strchr($10.code, '\n') != NULL) {
                 sprintf(temp, "(if %s\n(progn\n%s)\n(progn\n%s))", $3.code, $6.code, $10.code);
                 } else if (strchr($6.code, '\n') != NULL) {
@@ -319,8 +327,7 @@ if_con_else:
                 }
             ;
 
-inicializacion:
-
+asignacion_inicial:
             IDENTIF '=' operando {
                 sprintf(temp, "(setq %s %s)", $1.code, $3.code);
                 $$.code = gen_code(temp);
@@ -328,7 +335,7 @@ inicializacion:
             ;
 
 
-incremento:
+aumento:
             IDENTIF '=' expresion {
                 sprintf(temp, "(setq %s %s)", $1.code, $3.code);
                 $$.code = gen_code(temp);
@@ -382,6 +389,10 @@ expresion:
                 }
             | expresion '/' expresion { 
                 sprintf(temp, "(/ %s %s)", $1.code, $3.code);
+                $$.code = gen_code(temp); 
+                }
+            | expresion '%' expresion {
+                sprintf(temp, "(mod %s %s)", $1.code, $3.code);
                 $$.code = gen_code(temp); 
                 }
             | expresion '>' expresion { 
@@ -448,10 +459,6 @@ operando:
                     sprintf(temp, "%s", $1.code);
                 }
                 $$.code = gen_code(temp); 
-                }
-            | IDENTIF '(' argumentos ')' {
-                sprintf(temp, "(%s %s)", $1.code, $3.code);
-                $$.code = gen_code(temp);
                 }
             | NUMBER { 
                 sprintf(temp, "%d", $1.value);
@@ -541,6 +548,7 @@ char *mi_malloc (int nbytes)       // reserva n bytes de memoria dinamica
 
     return p ;
 }
+
 
 
 /***************************************************************************/
