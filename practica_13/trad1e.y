@@ -48,6 +48,9 @@ typedef struct s_attr {
 %token STRING
 %token MAIN          // identifica el comienzo del proc. main
 %token WHILE         // identifica el bucle main
+%token DEFVAR  // para reconocer (defvar A)
+%token DEFUN
+
 
 
 
@@ -66,22 +69,72 @@ r_axioma:                                { ; }
             |   axioma                   { ; }
             ;
 
-sentencia:    IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.code, $3.code) ; 
-                                           $$.code = gen_code (temp) ; }
-            | '@' expresion              { sprintf (temp, "(print %s)", $2.code) ;  
-                                           $$.code = gen_code (temp) ; }
-            ;
+sentencia 
+    : IDENTIF '=' expresion {
+        sprintf(temp, "%s %s !", $3.code, $1.code);  // Forth: <valor> <var> !
+        $$.code = gen_code(temp);
+    }
+    | '(' DEFVAR IDENTIF ')' {
+        sprintf(temp, "variable %s", $3.code);       // ← NUEVA REGLA
+        $$.code = gen_code(temp);
+    }
+    | '(' DEFUN IDENTIF '(' ')' expresion ')' {
+        sprintf(temp, ": %s %s ;", $3.code, $6.code);
+        $$.code = gen_code(temp);
+    }
+    | '(' MAIN expresion ')' {
+        sprintf(temp, ": main %s ;", $3.code);
+        $$.code = gen_code(temp);
+    }
+
+;
+
           
-expresion:      termino                  { $$ = $1 ; }
-            |   expresion '+' expresion  { sprintf (temp, "(+ %s %s)", $1.code, $3.code) ;
-                                           $$.code = gen_code (temp) ; }
-            |   expresion '-' expresion  { sprintf (temp, "(- %s %s)", $1.code, $3.code) ;
-                                           $$.code = gen_code (temp) ; }
-            |   expresion '*' expresion  { sprintf (temp, "(* %s %s)", $1.code, $3.code) ;
-                                           $$.code = gen_code (temp) ; }
-            |   expresion '/' expresion  { sprintf (temp, "(/ %s %s)", $1.code, $3.code) ;
-                                           $$.code = gen_code (temp) ; }
-            ;
+expresion:
+      termino {
+        $$ = $1;
+      }
+    | expresion '+' expresion {
+        sprintf(temp, "%s %s +", $1.code, $3.code);
+        $$.code = gen_code(temp);
+      }
+    | expresion '-' expresion {
+        sprintf(temp, "%s %s -", $1.code, $3.code);
+        $$.code = gen_code(temp);
+      }
+    | expresion '*' expresion {
+        sprintf(temp, "%s %s *", $1.code, $3.code);
+        $$.code = gen_code(temp);
+      }
+    | expresion '/' expresion {
+        sprintf(temp, "%s %s /", $1.code, $3.code);
+        $$.code = gen_code(temp);
+      }
+    | prefijo_aritmetico {
+        $$ = $1;
+      }
+;
+
+prefijo_aritmetico:
+      '(' '+' expresion expresion ')' {
+        sprintf(temp, "%s %s +", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' '-' expresion expresion ')' {
+        sprintf(temp, "%s %s -", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' '*' expresion expresion ')' {
+        sprintf(temp, "%s %s *", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' '/' expresion expresion ')' {
+        sprintf(temp, "%s %s /", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+;
+
+
 
 termino:        operando                           { $$ = $1 ; }                          
             |   '+' operando %prec UNARY_SIGN      { $$ = $1 ; }
@@ -89,12 +142,22 @@ termino:        operando                           { $$ = $1 ; }
                                                      $$.code = gen_code (temp) ; }    
             ;
 
-operando:       IDENTIF                  { sprintf (temp, "%s", $1.code) ;
-                                           $$.code = gen_code (temp) ; }
-            |   NUMBER                   { sprintf (temp, "%d", $1.value) ;
-                                           $$.code = gen_code (temp) ; }
-            |   '(' expresion ')'        { $$ = $2 ; }
-            ;
+operando:
+      IDENTIF { 
+        sprintf (temp, "%s", $1.code); 
+        $$.code = gen_code (temp); 
+      }
+    | NUMBER  { 
+        sprintf (temp, "%d", $1.value); 
+        $$.code = gen_code (temp); 
+      }
+    | STRING  { 
+        sprintf(temp, ".\" %s\"", $1.code); 
+        $$.code = gen_code(temp); 
+      }
+    | '(' expresion ')' { $$ = $2; }
+;
+
 
 
 %%                            // SECCION 4    Codigo en C
@@ -148,11 +211,14 @@ typedef struct s_keyword { // para las palabras reservadas de C
     int token ;
 } t_keyword ;
 
-t_keyword keywords [] = { // define las palabras reservadas y los
-    "main",        MAIN,           // y los token asociados
-    "int",         INTEGER,
-    NULL,          0               // para marcar el fin de la tabla
-} ;
+t_keyword keywords [] = {
+    "main",    MAIN,
+    "int",     INTEGER,
+    "defvar",  DEFVAR,
+    "defun",   DEFUN,
+    NULL,      0
+};
+
 
 t_keyword *search_keyword (char *symbol_name)
 {                                  // Busca n_s en la tabla de pal. res.
