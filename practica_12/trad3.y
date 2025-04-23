@@ -23,36 +23,6 @@ char temp [4096] ; // variable para almacenar cadenas temporales
 char *funcion_actual = NULL; // Nombre de la función actual
 
 
-// Tabla de variables locales
-typedef struct variable_local {
-    char *nombre;
-    struct variable_local *siguiente;
-} tipo_variable_local;
-
-tipo_variable_local *variables_locales = NULL;
-
-void añadir_var_local(char *nombre) {
-    tipo_variable_local *variable_nueva = (tipo_variable_local *)mi_malloc(sizeof(tipo_variable_local));
-    variable_nueva->nombre = gen_code(nombre);
-    variable_nueva->siguiente = variables_locales;
-    variables_locales = variable_nueva;
-}
-
-int es_variable_local(char *nombre) {
-    tipo_variable_local *actual = variables_locales;
-    while (actual != NULL) {
-        if (strcmp(actual->nombre, nombre) == 0) {
-            return 1;
-        }
-        actual = actual->siguiente;
-    }
-    return 0;
-}
-
-void vacial_variables_locales() {
-    variables_locales = NULL;
-}
-
 // Abstract Syntax Tree (AST) Node Structure
 
 typedef struct ASTnode t_node ;
@@ -73,6 +43,39 @@ typedef struct s_attr {
 } t_attr ;
 
 #define YYSTYPE t_attr
+
+
+// Tabla de variables locales
+typedef struct variable_local {
+    char *nombre;
+    struct variable_local *siguiente;
+} tipo_variable_local;
+
+tipo_variable_local *variables_locales = NULL;
+
+int es_variable_local(char *nombre) {
+    tipo_variable_local *actual = variables_locales;
+    while (actual != NULL) {
+        if (strcmp(actual->nombre, nombre) == 0) {
+            return 1;
+        }
+        actual = actual->siguiente;
+    }
+    return 0;
+}
+
+void añadir_var_local(char *nombre) {
+    tipo_variable_local *variable_nueva = (tipo_variable_local *)mi_malloc(sizeof(tipo_variable_local));
+    variable_nueva->nombre = gen_code(nombre);
+    variable_nueva->siguiente = variables_locales;
+    variables_locales = variable_nueva;
+}
+
+
+void vacial_variables_locales() {
+    variables_locales = NULL;
+}
+
 %}
 
 // Definitions for explicit attributes
@@ -93,35 +96,47 @@ typedef struct s_attr {
 %token RETURN                                       // identifica la sentencia return                 
 
 
-
-
 %right '='                                          // asignación
 %left OR                                            // or lógico
 %left AND                                           // and lógico
 %right NOT                                          // not lógico
-%left IGUAL DISTINTO                                // comparación de igualdad
-%left '<' '>' MENORIGUAL MAYORIGUAL                 // comparación numérica
-%left '+' '-'                                       // suma y resta
-%left '*' '/' '%'                                   // multiplicación, división y módulo
+%left IGUAL                                         // comparación de igualdad
+%left DISTINTO                                      // comparación de desigualdad
+%left '<'                                           // comparación numérica
+%left '>'                                           // comparación numérica
+%left MENORIGUAL                                    // comparación numérica                                    
+%left MAYORIGUAL                                    // comparación numérica
+%left '+'                                           // suma
+%left '-'                                           // resta
+%left '*'                                           // multiplicación
+%left '/'                                           // división
+%left '%'                                           // módulo
 %left UNARY_SIGN                                    // signo unario
 
 
 %%                            // Seccion 3 Gramatica - Semantico
 
+//***************************************************************************/
+
+// axioma 
 programa: 
             vars_globales conjunto_funciones { 
                 printf("%s\n%s\n", $1.code, $2.code); 
                 } 
             ;
 
+// Declaraciones de variables globales
 vars_globales:
-            /* vacío */ { $$.code = gen_code(""); }
+            /* vacío */ { 
+                $$.code = gen_code(""); 
+                }
             | vars_globales definicion_var_global ';' {
                 sprintf(temp, "%s\n%s", $1.code, $2.code);
                 $$.code = gen_code(temp);
             }
             ;
 
+// Definición de variables globales
 definicion_var_global:
             INTEGER conjunto_vars_global { 
                 $$.code = $2.code; 
@@ -145,12 +160,23 @@ conjunto_vars_global:
                 sprintf(temp, "%s\n(setq %s %d)", $1.code, $3.code, $5.value); 
                 $$.code = gen_code(temp); 
                 }
+            | IDENTIF '[' NUMBER ']' { 
+                sprintf(temp, "(setq %s (make-array %d))", $1.code, $3.value); 
+                $$.code = gen_code(temp); 
+                } 
+            | conjunto_vars_global ',' IDENTIF '[' NUMBER ']' { 
+                sprintf(temp, "%s\n(setq %s (make-array %d))", $1.code, $3.code, $5.value); 
+                $$.code = gen_code(temp); 
+                }
             ;
+
+// Definición de funciones
 conjunto_funciones: 
             funiones_con_main { 
                 $$.code = $1.code; 
                 }
             ;
+
 
 funiones_con_main:
             funcion_principal { 
@@ -172,21 +198,23 @@ funciones_auxiliares:
                 }
             ;
 
-
-
 definicion_funcion:
             IDENTIF '(' argumentos_funcion ')' '{' bloque_sentencias '}' {
                 funcion_actual = $1.code;
                 // Verificar si la última instrucción es un return
-                char *last_instr = strrchr($6.code, '\n');
-                if (last_instr != NULL) last_instr++;
-                else last_instr = $6.code;
-                
-                if (strstr(last_instr, "return") != NULL) {
+                char *ultima_instruccion = strrchr($6.code, '\n');
+                if (ultima_instruccion != NULL) {
+                    ultima_instruccion += 1;
+                    }
+                else {
+                    ultima_instruccion = $6.code;
+                    }
+                // Comprobar si la última instrucción es un return
+                if (strstr(ultima_instruccion, "return") != NULL) {
                     // Si termina con return, usamos el valor directamente
                     sprintf(temp, "(defun %s (%s)\n%s)", $1.code, $3.code, $6.code);
                 } else {
-                    // Si no termina con return, agregamos nil al final
+                    // Si no termina con el return, agregamos null al final
                     sprintf(temp, "(defun %s (%s)\n%s\n)", $1.code, $3.code, $6.code);
                 }
                 $$.code = gen_code(temp);
@@ -195,14 +223,18 @@ definicion_funcion:
             ;
 
 argumentos_funcion:
-            /* vacío */ { $$.code = gen_code(""); }
+            /* vacío */ { 
+                $$.code = gen_code(""); 
+                }
             | conjunto_parametros { 
                 $$.code = $1.code; 
                 }
             ;
 
 conjunto_parametros:
-            entrada_funcion { $$.code = $1.code; }
+            entrada_funcion { 
+                $$.code = $1.code; 
+                }
             | conjunto_parametros ',' entrada_funcion { 
                 sprintf(temp, "%s %s", $1.code, $3.code);
                 $$.code = gen_code(temp); 
@@ -252,12 +284,24 @@ sentencia_sep:
 
 sentencia_simple:
             IDENTIF '=' expresion { 
-                if(es_variable_local($1.code)) {
-                    sprintf(temp, "(setf %s_%s %s)", funcion_actual, $1.code, $3.code);
-                } else {
+                if(!es_variable_local($1.code)) {
                     sprintf(temp, "(setf %s %s)", $1.code, $3.code);
+                } else {
+                    sprintf(temp, "(setf %s_%s %s)", funcion_actual, $1.code, $3.code);
                 }
                 $$.code = gen_code(temp); 
+                }
+            | IDENTIF '[' expresion ']' '=' expresion {
+                if(!es_variable_local($1.code)) {
+                    sprintf(temp, "(setf (aref %s %s) %s)", $1.code, $3.code, $6.code);
+                } else {
+                    sprintf(temp, "(setf (aref %s_%s %s) %s)", funcion_actual, $1.code, $3.code, $6.code);
+                }
+                $$.code = gen_code(temp); 
+                }
+            | IDENTIF '(' argumentos ')' {  // Llamada a función como sentencia
+                sprintf(temp, "(%s %s)", $1.code, $3.code);
+                $$.code = gen_code(temp);
                 }
             | '@' expresion                   { sprintf(temp, "(print %s)", $2.code);
                                                 $$.code = gen_code(temp); }
@@ -268,31 +312,23 @@ sentencia_simple:
                                                 }
             |RETURN expresion {
                 if (funcion_actual != NULL) {
-                    if (es_variable_local($2.code)) {
-                        sprintf(temp, "(%s_%s)", funcion_actual, $2.code);
-                    } else {
+                    if (!es_variable_local($2.code)) {
                         sprintf(temp, "%s", $2.code);
+                    } else {
+                        sprintf(temp, "(%s_%s)", funcion_actual, $2.code);
                     }
                 }
                 $$.code = gen_code(temp);
                 }
-            | IDENTIF '(' argumentos ')' {  // Llamada a función como sentencia
-                sprintf(temp, "(%s %s)", $1.code, $3.code);
-                $$.code = gen_code(temp);
-                }
-            ;
             ;
 
 sentencia_bloque:
             if_solo
-
             | if_else
-
             | WHILE '(' expresion ')' '{' bloque_sentencias '}' {
                 sprintf(temp, "(loop while %s do\n%s)", $3.code, $6.code);
                 $$.code = gen_code(temp);
-            }
-
+                }
             | FOR '(' asignacion_inicial ';' expresion ';' aumento ')' '{' bloque_sentencias '}' {
                 sprintf(temp, "(progn\n%s\n(loop while %s do\n(progn\n%s\n%s)))", 
                         $3.code, $5.code, $10.code, $7.code);
@@ -300,29 +336,9 @@ sentencia_bloque:
                 }
             ;
 
-
-if_solo:
-            IF '(' expresion ')' '{' bloque_sentencias '}' {
-                if (strchr($6.code, '\n') != NULL) {
-                    sprintf(temp, "(if %s\n(progn %s))", $3.code, $6.code);
-                } else {
-                    sprintf(temp, "(if %s\n%s)", $3.code, $6.code);
-                }
-                $$.code = gen_code(temp);
-                }
-            ;
-
-if_else:
-            IF '(' expresion ')' '{' bloque_sentencias '}' ELSE '{' bloque_sentencias '}' {
-                if (strchr($6.code, '\n') != NULL && strchr($10.code, '\n') != NULL) {
-                sprintf(temp, "(if %s\n(progn\n%s)\n(progn\n%s))", $3.code, $6.code, $10.code);
-                } else if (strchr($6.code, '\n') != NULL) {
-                sprintf(temp, "(if %s\n(progn\n%s)\n%s)", $3.code, $6.code, $10.code);
-                } else if (strchr($10.code, '\n') != NULL) {
-                sprintf(temp, "(if %s\n%s\n(progn\n%s))", $3.code, $6.code, $10.code);
-                } else {
-                sprintf(temp, "(if %s\n%s\n%s\n)", $3.code, $6.code, $10.code);
-                }
+aumento:
+            IDENTIF '=' expresion {
+                sprintf(temp, "(setq %s %s)", $1.code, $3.code);
                 $$.code = gen_code(temp);
                 }
             ;
@@ -334,13 +350,36 @@ asignacion_inicial:
                 }
             ;
 
+if_else:
+            IF '(' expresion ')' '{' bloque_sentencias '}' ELSE '{' bloque_sentencias '}' {
+                if (strchr($6.code, '\n') != NULL && strchr($10.code, '\n') != NULL) {
+                    sprintf(temp, "(if %s\n(progn\n%s)\n(progn\n%s))", $3.code, $6.code, $10.code);
+                } 
+                else if (strchr($6.code, '\n') != NULL) {
+                    sprintf(temp, "(if %s\n(progn\n%s)\n%s)", $3.code, $6.code, $10.code);
+                } 
+                else if (strchr($10.code, '\n') != NULL) {
+                    sprintf(temp, "(if %s\n%s\n(progn\n%s))", $3.code, $6.code, $10.code);
+                } 
+                else {
+                    sprintf(temp, "(if %s\n%s\n%s\n)", $3.code, $6.code, $10.code);
+                }
+                    $$.code = gen_code(temp);
+                }
+            ;
 
-aumento:
-            IDENTIF '=' expresion {
-                sprintf(temp, "(setq %s %s)", $1.code, $3.code);
+if_solo:
+            IF '(' expresion ')' '{' bloque_sentencias '}' {
+                if (strchr($6.code, '\n') == NULL) {
+                    sprintf(temp, "(if %s\n%s)", $3.code, $6.code);
+                } else {
+                    sprintf(temp, "(if %s\n(progn %s))", $3.code, $6.code);
+                }
                 $$.code = gen_code(temp);
                 }
             ;
+
+
 
 declaracion_variable:
             INTEGER lista_declaracion   { 
@@ -357,6 +396,11 @@ lista_declaracion:
             | IDENTIF '=' NUMBER { 
                 añadir_var_local($1.code);
                 sprintf(temp, "(setq %s_%s %d)", funcion_actual, $1.code, $3.value);
+                $$.code = gen_code(temp); 
+            }
+            | IDENTIF '[' NUMBER ']' { 
+                añadir_var_local($1.code);
+                sprintf(temp, "(setq %s_%s (make-array %d))", funcion_actual, $1.code, $3.value);
                 $$.code = gen_code(temp); 
             }
             | lista_declaracion ',' IDENTIF {
@@ -451,12 +495,22 @@ termino:
 
 operando:   
             IDENTIF {
-                if(funcion_actual != NULL && es_variable_local($1.code)) {
-                    // Variable local o parámetro
-                    sprintf(temp, "%s_%s", funcion_actual, $1.code);
-                } else {
+                if(funcion_actual == NULL || !es_variable_local($1.code)) {
                     // Variable global
                     sprintf(temp, "%s", $1.code);
+                } else {
+                    // Variable local o parámetro
+                    sprintf(temp, "%s_%s", funcion_actual, $1.code);
+                }
+                $$.code = gen_code(temp); 
+                }
+            | IDENTIF '[' expresion ']' {
+                if(funcion_actual == NULL || !es_variable_local($1.code)) {
+                    // Variable global
+                    sprintf(temp, "(aref %s %s)", $1.code, $3.code);
+                } else {
+                    // Variable local o parámetro
+                    sprintf(temp, "(aref %s_%s %s)", funcion_actual, $1.code, $3.code);
                 }
                 $$.code = gen_code(temp); 
                 }
@@ -466,23 +520,6 @@ operando:
                 }
             | '(' expresion ')' { 
                 $$ = $2; 
-                }
-            ;
-
-argumentos:
-            /* vacío */ { $$.code = gen_code(""); }
-            | lista_argumentos { 
-                $$.code = $1.code; 
-                }
-            ;
-
-lista_argumentos:
-            expresion { 
-                $$.code = $1.code; 
-                }
-            | lista_argumentos ',' expresion { 
-                sprintf(temp, "%s %s", $1.code, $3.code);
-                $$.code = gen_code(temp); 
                 }
             ;
 
@@ -505,6 +542,25 @@ elemento:   expresion {
                 $$.code = gen_code(temp); 
                 }
             ;
+
+
+argumentos:
+            /* vacío */ { $$.code = gen_code(""); }
+            | lista_argumentos { 
+                $$.code = $1.code; 
+                }
+            ;
+
+lista_argumentos:
+            expresion { 
+                $$.code = $1.code; 
+                }
+            | lista_argumentos ',' expresion { 
+                sprintf(temp, "%s %s", $1.code, $3.code);
+                $$.code = gen_code(temp); 
+                }
+            ;
+
 
 
 

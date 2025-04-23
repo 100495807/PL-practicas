@@ -1,8 +1,10 @@
-int square (int v) { 
+#include <stdio.h> 
+
+square (int v) { 
     return (v*v) ; 
 } 
  
-int fact (int n) { 
+fact (int n) { 
    int f ; 
    if (n == 1) { 
       f = 1 ; 
@@ -12,16 +14,18 @@ int fact (int n) {
    return f ; 
 } 
  
-int is_even (int v) { 
+is_even (int v) { 
    int ep  ; 
+   int mivector[10]; 
    printf ("%d", v) ; 
-   if (v + 2 == 0) { 
+   if (v % 2 == 0) { 
       puts (" is even") ; 
       ep = 1 ; 
    } else { 
       puts (" is odd") ; 
       ep = 0 ; 
-   } 
+   }
+   mivector [5] = 123 ;
    return ep ; 
 } 
  
@@ -33,4 +37,4 @@ main () {
    is_even (8) ;
 }
 
-//@ (main) 
+//@ (main)
