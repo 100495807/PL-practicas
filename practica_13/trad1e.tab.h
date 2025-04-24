@@ -62,7 +62,17 @@ extern int yydebug;
     WHILE = 263,                   /* WHILE  */
     DEFVAR = 264,                  /* DEFVAR  */
     DEFUN = 265,                   /* DEFUN  */
-    UNARY_SIGN = 266               /* UNARY_SIGN  */
+    PRINT = 266,                   /* PRINT  */
+    SETF = 267,                    /* SETF  */
+    LT = 268,                      /* LT  */
+    LE = 269,                      /* LE  */
+    GT = 270,                      /* GT  */
+    GE = 271,                      /* GE  */
+    EQ = 272,                      /* EQ  */
+    NEQ = 273,                     /* NEQ  */
+    NOT = 274,                     /* NOT  */
+    IF = 275,                      /* IF  */
+    UNARY_SIGN = 276               /* UNARY_SIGN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

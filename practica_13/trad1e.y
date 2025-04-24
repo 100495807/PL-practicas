@@ -50,7 +50,10 @@ typedef struct s_attr {
 %token WHILE         // identifica el bucle main
 %token DEFVAR  // para reconocer (defvar A)
 %token DEFUN
-
+%token PRINT
+%token SETF
+%token LT LE GT GE EQ NEQ NOT
+%token IF
 
 
 
@@ -69,6 +72,14 @@ r_axioma:                                { ; }
             |   axioma                   { ; }
             ;
 
+bloque_expr:
+      expresion
+    | sentencia
+    | '(' sentencia ')'   // NUEVO: permite ifs anidados y sentencias con paréntesis
+    ;
+
+
+
 sentencia 
     : IDENTIF '=' expresion {
         sprintf(temp, "%s %s !", $3.code, $1.code);  // Forth: <valor> <var> !
@@ -86,8 +97,34 @@ sentencia
         sprintf(temp, ": main %s ;", $3.code);
         $$.code = gen_code(temp);
     }
+    | '(' PRINT expresion ')' {
+        // Si empieza por un dígito, imprimimos tal cual
+        if (isdigit($3.code[0])) {
+            sprintf(temp, "%s .", $3.code);
+        } else {
+            sprintf(temp, "%s @ .", $3.code);
+        }
+        $$.code = gen_code(temp);
+    }
+    | '(' SETF IDENTIF IDENTIF ')' {
+        sprintf(temp, "%s @ %s !", $4.code, $3.code);
+        $$.code = gen_code(temp);
+    }
+    | '(' WHILE expresion expresion ')' {
+        sprintf(temp, "begin %s while %s repeat", $3.code, $4.code);
+        $$.code = gen_code(temp);
+    }
+    | '(' IF expresion bloque_expr bloque_expr ')' {
+        sprintf(temp, "%s if %s else %s then", $3.code, $4.code, $5.code);
+        $$.code = gen_code(temp);
+    }
+    | '(' IF expresion bloque_expr ')' {
+        sprintf(temp, "%s if %s then", $3.code, $4.code);
+        $$.code = gen_code(temp);
+    }
 
 ;
+
 
           
 expresion:
@@ -113,6 +150,7 @@ expresion:
     | prefijo_aritmetico {
         $$ = $1;
       }
+
 ;
 
 prefijo_aritmetico:
@@ -132,6 +170,35 @@ prefijo_aritmetico:
         sprintf(temp, "%s %s /", $3.code, $4.code);
         $$.code = gen_code(temp);
       }
+    | '(' LT expresion expresion ')' {
+        sprintf(temp, "%s %s <", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' LE expresion expresion ')' {
+        sprintf(temp, "%s %s <=", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' GT expresion expresion ')' {
+        sprintf(temp, "%s %s >", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' GE expresion expresion ')' {
+        sprintf(temp, "%s %s >=", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' EQ expresion expresion ')' {
+        sprintf(temp, "%s %s =", $3.code, $4.code);
+        $$.code = gen_code(temp);
+      }
+    | '(' NEQ expresion expresion ')' {
+        sprintf(temp, "%s %s = 0=", $3.code, $4.code);  // Forth: = seguido de 0= para simular /=
+        $$.code = gen_code(temp);
+      }
+    | '(' NOT expresion ')' {
+        sprintf(temp, "%s 0=", $3.code);
+        $$.code = gen_code(temp);
+      }
+
 ;
 
 
@@ -169,6 +236,7 @@ char *mensaje ;
 {
     fprintf (stderr, "%s en la linea %d\n", mensaje, n_line) ;
     printf ( "\n") ;	// bye
+    return 0;
 }
 
 char *int_to_string (int n)
@@ -212,12 +280,24 @@ typedef struct s_keyword { // para las palabras reservadas de C
 } t_keyword ;
 
 t_keyword keywords [] = {
-    "main",    MAIN,
-    "int",     INTEGER,
-    "defvar",  DEFVAR,
-    "defun",   DEFUN,
-    NULL,      0
+    {"main",    MAIN},
+    {"int",     INTEGER},
+    {"defvar",  DEFVAR},
+    {"defun",   DEFUN},
+    {"print",   PRINT},
+    {"setf",    SETF},
+    {"while",   WHILE},
+    {"<",       LT},
+    {"<=",      LE},
+    {">",       GT},
+    {">=",      GE},
+    {"=",       EQ},
+    {"/=",      NEQ},
+    {"not",     NOT},
+    {"if",      IF},
+    {NULL,      0}
 };
+
 
 
 t_keyword *search_keyword (char *symbol_name)
