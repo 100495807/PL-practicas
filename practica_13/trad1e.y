@@ -48,10 +48,13 @@ typedef struct s_attr {
 %token STRING
 %token MAIN          // identifica el comienzo del proc. main
 %token WHILE         // identifica el bucle main
+%token DO           // identifica el bu
+%token LOOP
 %token DEFVAR  // para reconocer (defvar A)
 %token DEFUN
 %token PRINT
 %token SETF
+%token SETQ
 %token LT LE GT GE EQ NEQ NOT
 %token IF
 
@@ -73,10 +76,13 @@ r_axioma:                                { ; }
             ;
 
 bloque_expr:
-      expresion
-    | sentencia
-    | '(' sentencia ')'   // NUEVO: permite ifs anidados y sentencias con paréntesis
-    ;
+      sentencia_bloque      
+;
+
+sentencia_bloque:
+      sentencia
+    | '(' sentencia ')'
+;
 
 
 
@@ -86,7 +92,7 @@ sentencia
         $$.code = gen_code(temp);
     }
     | '(' DEFVAR IDENTIF ')' {
-        sprintf(temp, "variable %s", $3.code);       // ← NUEVA REGLA
+        sprintf(temp, "variable %s", $3.code);   
         $$.code = gen_code(temp);
     }
     | '(' DEFUN IDENTIF '(' ')' expresion ')' {
@@ -108,12 +114,12 @@ sentencia
         }
         $$.code = gen_code(temp);
     }
-    | '(' SETF IDENTIF IDENTIF ')' {
-        sprintf(temp, "%s @ %s !", $4.code, $3.code);
+    | '(' SETF IDENTIF expresion ')' {
+        sprintf(temp, "%s %s !", $3.code, $4.code);
         $$.code = gen_code(temp);
     }
-    | '(' WHILE expresion bloque_expr ')' {
-        sprintf(temp, "begin %s while %s repeat", $3.code, $4.code);
+    | '(' LOOP WHILE expresion DO bloque_expr ')' {
+        sprintf(temp, "begin %s while %s repeat", $4.code, $6.code);
         $$.code = gen_code(temp);
     }
     | '(' IF expresion bloque_expr bloque_expr ')' {
@@ -126,7 +132,6 @@ sentencia
     }
 
 ;
-
 
           
 expresion:
@@ -149,11 +154,13 @@ expresion:
         sprintf(temp, "%s %s /", $1.code, $3.code);
         $$.code = gen_code(temp);
       }
-    | prefijo_aritmetico {
-        $$ = $1;
-      }
-
+    | expresion_prefija { $$ = $1; }
 ;
+
+expresion_prefija:
+    prefijo_aritmetico { $$ = $1; }
+;
+
 
 prefijo_aritmetico:
       '(' '+' expresion expresion ')' {
@@ -289,6 +296,8 @@ t_keyword keywords [] = {
     {"print",   PRINT},
     {"setf",    SETF},
     {"while",   WHILE},
+    {"do",      DO},
+    {"loop",    LOOP},
     {"<",       LT},
     {"<=",      LE},
     {">",       GT},

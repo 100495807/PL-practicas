@@ -18,6 +18,9 @@ is_even (int v) {
    int ep  ; 
    int mivector[10]; 
    printf ("%d", v) ; 
+   while (v > 0) { 
+      v = v ; 
+   }
    if (v % 2 == 0) { 
       puts (" is even") ; 
       ep = 1 ; 
