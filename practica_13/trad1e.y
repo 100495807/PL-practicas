@@ -110,7 +110,7 @@ sentencia
         sprintf(temp, "%s @ %s !", $4.code, $3.code);
         $$.code = gen_code(temp);
     }
-    | '(' WHILE expresion expresion ')' {
+    | '(' WHILE expresion bloque_expr ')' {
         sprintf(temp, "begin %s while %s repeat", $3.code, $4.code);
         $$.code = gen_code(temp);
     }
