@@ -1,0 +1,9 @@
+(defvar x);
+x = 10;
+b = 8*2;
+(defun suma () (+ 2 3));
+(main (suma));
+(print "Hola mundo");
+(print 42);
+(print z);
+B = A*10+(23/10);

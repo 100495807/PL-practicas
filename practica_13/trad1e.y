@@ -99,7 +99,9 @@ sentencia
     }
     | '(' PRINT expresion ')' {
         // Si empieza por un dígito, imprimimos tal cual
-        if (isdigit($3.code[0])) {
+        if ($3.code[0] == '.' && $3.code[1] == '"') {
+            sprintf(temp, "%s", $3.code);
+        } else if (isdigit($3.code[0])) {
             sprintf(temp, "%s .", $3.code);
         } else {
             sprintf(temp, "%s @ .", $3.code);
