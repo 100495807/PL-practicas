@@ -1,3 +1,8 @@
+/*
+JORGE MEJIAS DONOSO - ALBERTO MENCHEN MONTERO - 206
+100495807@alumons.uc3m.es 100495692@alumnos.uc3m.es
+*/
+
 %{                          // SECCION 1 Declaraciones de C-Yacc
 
 #include <stdio.h>
