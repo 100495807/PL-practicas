@@ -1,4 +1,0 @@
-(defvar v);
-(setf v 5);
-(loop while (> v 0) do (setf v v));
-(print v);

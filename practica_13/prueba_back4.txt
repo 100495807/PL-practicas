@@ -1,0 +1,16 @@
+(setq A 0)
+(setq B A)
+(defun is_even (v)
+(print " is even")
+(princ A)
+)
+(loop while (< a 10) do
+(princ a)
+(setq a (+ a 1)))
+(if (= a 10)
+(progn
+(print " is even")
+(setf is_even_ep 1))
+(progn
+(print " is odd")
+(setf is_even_ep 0)))
