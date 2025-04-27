@@ -66,6 +66,7 @@ typedef struct s_attr {
 %token UNARY_SIGN
 %token IF
 %token PROGN
+%token ARRAY
 
 
 
@@ -93,8 +94,8 @@ sentencia:    IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.cod
                                             $$.code = gen_code(temp); }
             | '(' SETF IDENTIF expresion ')' { sprintf(temp, "variable %s\n%s %s !", $3.code, $4.code, $3.code);
                                             $$.code = gen_code(temp); }
-            | '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias ')' {
-                                           sprintf(temp, ": %s\n%s\n;", $3.code, $7.code);
+            | '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return')' {
+                                           sprintf(temp, ": %s\n%s\n%s;", $3.code, $7.code, $8.code);
                                            $$.code = gen_code (temp) ; }
             | '(' DEFUN MAIN '(' ')' lista_sentencias ')' {
                                            sprintf(temp, ": %s\n%s\n;", $3.code, $6.code);
@@ -110,8 +111,11 @@ sentencia:    IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.cod
             | if_else_simple                {$$.code = $1.code;}
             | if                            {$$.code = $1.code;}
             | if_else                       {$$.code = $1.code;}
-            | '(' expresion ')'          { sprintf(temp, "(%s)", $2.code);
-                                            $$.code = gen_code(temp); }
+            | '(' expresion ')'          { ; }
+            ;
+
+return:     /*lambda*/ { ; }
+            | IDENTIF { ; }
             ;
 
 if_simple:   '(' IF '(' expresion ')'  lista_sentencias ')' {
@@ -137,6 +141,8 @@ lista_sentencias: sentencia
             ;
           
 expresion:      termino                  { $$ = $1 ; }
+            |   expresion '(' expresion ')'  { sprintf (temp, "(%s %s)", $1.code, $3.code) ;
+                                           $$.code = gen_code (temp) ; }
             |   '+' expresion expresion  { sprintf (temp, "%s %s +", $2.code, $3.code) ;
                                            $$.code = gen_code (temp) ; }
             |   '-' expresion expresion  { sprintf (temp, "%s %s -", $2.code, $3.code) ;
@@ -165,7 +171,10 @@ expresion:      termino                  { $$ = $1 ; }
                                              $$.code = gen_code (temp) ; }
             |   NOT expresion  %prec UNARY_SIGN        { sprintf (temp, "%s 0=", $2.code) ;
                                              $$.code = gen_code (temp) ; }
+            |  '(' ARRAY expresion ')' { sprintf (temp, "%s @", $3.code) ;
+                                             $$.code = gen_code (temp) ; }
             ;
+
 
 termino:        operando                           { $$ = $1 ; }                          
             |   '+' operando %prec UNARY_SIGN      { $$ = $1 ; }
@@ -259,6 +268,7 @@ t_keyword keywords [] = { // define las palabras reservadas y los
     {"/=",        DISTINTO},
     {"if",         IF},
     {"progn",       PROGN},
+    {"array",       ARRAY},
     {NULL,          0}               // para marcar el fin de la tabla
 } ;
 
