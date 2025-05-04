@@ -1,0 +1,4 @@
+(setq a 0)
+(defun square (v)
+(* v v)
+)
