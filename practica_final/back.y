@@ -119,7 +119,7 @@ sentencia:    IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.cod
             | '(' LOOP WHILE '(' expresion ')' DO lista_sentencias ')' {
                                              sprintf(temp, "BEGIN\n%s\nWHILE\n%s\nREPEAT", $5.code, $8.code);
                                              $$.code = gen_code (temp) ; }
-            | if_general                            {$$.code = $1.code;}
+            | if                            {$$.code = $1.code;}
             | expresion { sprintf (temp, "%s", $1.code) ; 
                                            $$.code = gen_code (temp) ; }
             ;
@@ -135,27 +135,29 @@ return:     /*lambda*/ { ; }
             ;
 
 
-if_general: 
-                '(' IF '(' expresion ')' possible_progn possible_progn ')' {
-                                                                        if (strlen($7.code) > 0) {  // Si el segundo possible_progn tiene código
-                                                                            sprintf(temp, "%s \nif\n%s\n else \n%s\n then ", $4.code, $6.code, $7.code);
-                                                                        } else {  // Si el segundo possible_progn está vacío
-                                                                            sprintf(temp, "%s \nif \n%s\n then", $4.code, $6.code);
-                                                                        }
-                                                                        $$.code = gen_code(temp);
-                                                                    }
-                
-
-                    ;
+if: '(' IF '(' expresion ')' progn progn ')' {
+                                        if (strlen($7.code) <= 0) {  
+                                            sprintf(temp, "%s\nIF\n%s\nTHEN", $4.code, $6.code);
+                                        } else {  
+                                            sprintf(temp, "%s\nIF\n%s\nELSE\n%s\nTHEN", $4.code, $6.code, $7.code);
+                                        }
+                                        $$.code = gen_code(temp);
+                                        }
+                                    ;
 
 
-possible_progn:     '(' PROGN lista_sentencias ')' {sprintf (temp, "%s", $3.code);
-                                        $$.code = gen_code(temp);}
-                    | sentencia       {sprintf (temp, "%s", $1.code);
-                                        $$.code = gen_code(temp); }
-                    | /*vacio*/         { $$.code = gen_code("");
-                                            }
-                    ;
+progn:     '(' PROGN lista_sentencias ')'   {
+                                            sprintf (temp, "%s", $3.code);
+                                            $$.code = gen_code(temp);
+                                                }
+                    | sentencia             {
+                                            sprintf (temp, "%s", $1.code);
+                                            $$.code = gen_code(temp); 
+                                                }
+                    | /*vacio*/             { 
+                                            $$.code = gen_code("");
+                                                }
+                                        ;   
 
 
 lista_sentencias: sentencia
