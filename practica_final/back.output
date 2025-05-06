@@ -1,0 +1,1822 @@
+Nonterminals useless in grammar
+
+    termino
+
+
+Terminals unused in grammar
+
+    INTEGER
+    E
+    PROGN
+
+
+Rules useless in grammar
+
+   43 termino: operando
+   44        | '+' operando
+   45        | '-' operando
+
+
+State 107 conflicts: 4 reduce/reduce
+
+
+Grammar
+
+    0 $accept: axioma $end
+
+    1 $@1: ε
+
+    2 axioma: sentencia $@1 r_axioma
+
+    3 r_axioma: ε
+    4         | axioma
+
+    5 sentencia: IDENTIF '=' expresion
+    6          | '@' expresion
+    7          | '(' SETQ IDENTIF expresion ')'
+    8          | '(' SETF IDENTIF expresion ')'
+    9          | '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return ')'
+   10          | '(' DEFUN MAIN '(' ')' lista_sentencias ')'
+   11          | '(' PRINT STRING ')'
+   12          | '(' PRINC IDENTIF ')'
+   13          | '(' LOOP WHILE '(' expresion ')' DO lista_sentencias ')'
+   14          | if_simple
+   15          | if_else_simple
+   16          | '(' expresion ')'
+
+   17 return: ε
+   18       | IDENTIF
+
+   19 if_simple: '(' IF '(' expresion ')' lista_sentencias ')'
+
+   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias lista_sentencias ')'
+
+   21 lista_sentencias: sentencia
+   22                 | lista_sentencias sentencia
+
+   23 expresion: operando
+   24          | '+' expresion expresion
+   25          | '-' expresion expresion
+   26          | '*' expresion expresion
+   27          | '/' expresion expresion
+   28          | MOD expresion expresion
+   29          | '=' expresion expresion
+   30          | '<' expresion expresion
+   31          | '>' expresion expresion
+   32          | MET expresion expresion
+   33          | GET expresion expresion
+   34          | DISTINTO expresion expresion
+   35          | AND expresion expresion
+   36          | OR expresion expresion
+   37          | NOT expresion
+   38          | '(' ARRAY expresion ')'
+
+   39 operando: IDENTIF
+   40         | NUMBER
+   41         | STRING
+   42         | '(' expresion ')'
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40) 7 8 9 10 11 12 13 16 19 20 38 42
+    ')' (41) 7 8 9 10 11 12 13 16 19 20 38 42
+    '*' (42) 26
+    '+' (43) 24
+    '-' (45) 25
+    '/' (47) 27
+    '<' (60) 30
+    '=' (61) 5 29
+    '>' (62) 31
+    '@' (64) 6
+    error (256)
+    NUMBER (258) 40
+    IDENTIF (259) 5 7 8 9 12 18 39
+    INTEGER (260)
+    STRING (261) 11 41
+    MAIN (262) 10
+    WHILE (263) 13
+    LOOP (264) 13
+    DO (265) 13
+    SETQ (266) 7
+    SETF (267) 8
+    DEFUN (268) 9 10
+    PRINT (269) 11
+    PRINC (270) 12
+    AND (271) 35
+    OR (272) 36
+    NOT (273) 37
+    MOD (274) 28
+    E (275)
+    MET (276) 32
+    GET (277) 33
+    DISTINTO (278) 34
+    UNARY_SIGN (279)
+    IF (280) 19 20
+    PROGN (281)
+    ARRAY (282) 38
+
+
+Nonterminals, with rules where they appear
+
+    $accept (38)
+        on left: 0
+    axioma (39)
+        on left: 2
+        on right: 0 4
+    $@1 (40)
+        on left: 1
+        on right: 2
+    r_axioma (41)
+        on left: 3 4
+        on right: 2
+    sentencia (42)
+        on left: 5 6 7 8 9 10 11 12 13 14 15 16
+        on right: 2 21 22
+    return (43)
+        on left: 17 18
+        on right: 9
+    if_simple (44)
+        on left: 19
+        on right: 14
+    if_else_simple (45)
+        on left: 20
+        on right: 15
+    lista_sentencias (46)
+        on left: 21 22
+        on right: 9 10 13 19 20 22
+    expresion (47)
+        on left: 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38
+        on right: 5 6 7 8 13 16 19 20 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 42
+    operando (48)
+        on left: 39 40 41 42
+        on right: 23
+
+
+State 0
+
+    0 $accept: • axioma $end
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+
+    axioma          go to state 4
+    sentencia       go to state 5
+    if_simple       go to state 6
+    if_else_simple  go to state 7
+
+
+State 1
+
+    5 sentencia: IDENTIF • '=' expresion
+
+    '='  shift, and go to state 8
+
+
+State 2
+
+    6 sentencia: '@' • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 27
+    operando   go to state 28
+
+
+State 3
+
+    7 sentencia: '(' • SETQ IDENTIF expresion ')'
+    8          | '(' • SETF IDENTIF expresion ')'
+    9          | '(' • DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return ')'
+   10          | '(' • DEFUN MAIN '(' ')' lista_sentencias ')'
+   11          | '(' • PRINT STRING ')'
+   12          | '(' • PRINC IDENTIF ')'
+   13          | '(' • LOOP WHILE '(' expresion ')' DO lista_sentencias ')'
+   16          | '(' • expresion ')'
+   19 if_simple: '(' • IF '(' expresion ')' lista_sentencias ')'
+   20 if_else_simple: '(' • IF '(' expresion ')' lista_sentencias lista_sentencias ')'
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    LOOP      shift, and go to state 29
+    SETQ      shift, and go to state 30
+    SETF      shift, and go to state 31
+    DEFUN     shift, and go to state 32
+    PRINT     shift, and go to state 33
+    PRINC     shift, and go to state 34
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    IF        shift, and go to state 35
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 36
+    operando   go to state 28
+
+
+State 4
+
+    0 $accept: axioma • $end
+
+    $end  shift, and go to state 37
+
+
+State 5
+
+    2 axioma: sentencia • $@1 r_axioma
+
+    $default  reduce using rule 1 ($@1)
+
+    $@1  go to state 38
+
+
+State 6
+
+   14 sentencia: if_simple •
+
+    $default  reduce using rule 14 (sentencia)
+
+
+State 7
+
+   15 sentencia: if_else_simple •
+
+    $default  reduce using rule 15 (sentencia)
+
+
+State 8
+
+    5 sentencia: IDENTIF '=' • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 39
+    operando   go to state 28
+
+
+State 9
+
+   40 operando: NUMBER •
+
+    $default  reduce using rule 40 (operando)
+
+
+State 10
+
+   39 operando: IDENTIF •
+
+    $default  reduce using rule 39 (operando)
+
+
+State 11
+
+   41 operando: STRING •
+
+    $default  reduce using rule 41 (operando)
+
+
+State 12
+
+   35 expresion: AND • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 40
+    operando   go to state 28
+
+
+State 13
+
+   36 expresion: OR • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 41
+    operando   go to state 28
+
+
+State 14
+
+   37 expresion: NOT • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 42
+    operando   go to state 28
+
+
+State 15
+
+   28 expresion: MOD • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 43
+    operando   go to state 28
+
+
+State 16
+
+   32 expresion: MET • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 44
+    operando   go to state 28
+
+
+State 17
+
+   33 expresion: GET • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 45
+    operando   go to state 28
+
+
+State 18
+
+   34 expresion: DISTINTO • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 46
+    operando   go to state 28
+
+
+State 19
+
+   29 expresion: '=' • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 47
+    operando   go to state 28
+
+
+State 20
+
+   30 expresion: '<' • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 48
+    operando   go to state 28
+
+
+State 21
+
+   31 expresion: '>' • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 49
+    operando   go to state 28
+
+
+State 22
+
+   24 expresion: '+' • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 50
+    operando   go to state 28
+
+
+State 23
+
+   25 expresion: '-' • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 51
+    operando   go to state 28
+
+
+State 24
+
+   26 expresion: '*' • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 52
+    operando   go to state 28
+
+
+State 25
+
+   27 expresion: '/' • expresion expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 53
+    operando   go to state 28
+
+
+State 26
+
+   38 expresion: '(' • ARRAY expresion ')'
+   42 operando: '(' • expresion ')'
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    ARRAY     shift, and go to state 54
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 55
+    operando   go to state 28
+
+
+State 27
+
+    6 sentencia: '@' expresion •
+
+    $default  reduce using rule 6 (sentencia)
+
+
+State 28
+
+   23 expresion: operando •
+
+    $default  reduce using rule 23 (expresion)
+
+
+State 29
+
+   13 sentencia: '(' LOOP • WHILE '(' expresion ')' DO lista_sentencias ')'
+
+    WHILE  shift, and go to state 56
+
+
+State 30
+
+    7 sentencia: '(' SETQ • IDENTIF expresion ')'
+
+    IDENTIF  shift, and go to state 57
+
+
+State 31
+
+    8 sentencia: '(' SETF • IDENTIF expresion ')'
+
+    IDENTIF  shift, and go to state 58
+
+
+State 32
+
+    9 sentencia: '(' DEFUN • IDENTIF '(' IDENTIF ')' lista_sentencias return ')'
+   10          | '(' DEFUN • MAIN '(' ')' lista_sentencias ')'
+
+    IDENTIF  shift, and go to state 59
+    MAIN     shift, and go to state 60
+
+
+State 33
+
+   11 sentencia: '(' PRINT • STRING ')'
+
+    STRING  shift, and go to state 61
+
+
+State 34
+
+   12 sentencia: '(' PRINC • IDENTIF ')'
+
+    IDENTIF  shift, and go to state 62
+
+
+State 35
+
+   19 if_simple: '(' IF • '(' expresion ')' lista_sentencias ')'
+   20 if_else_simple: '(' IF • '(' expresion ')' lista_sentencias lista_sentencias ')'
+
+    '('  shift, and go to state 63
+
+
+State 36
+
+   16 sentencia: '(' expresion • ')'
+
+    ')'  shift, and go to state 64
+
+
+State 37
+
+    0 $accept: axioma $end •
+
+    $default  accept
+
+
+State 38
+
+    2 axioma: sentencia $@1 • r_axioma
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+
+    $default  reduce using rule 3 (r_axioma)
+
+    axioma          go to state 65
+    r_axioma        go to state 66
+    sentencia       go to state 5
+    if_simple       go to state 6
+    if_else_simple  go to state 7
+
+
+State 39
+
+    5 sentencia: IDENTIF '=' expresion •
+
+    $default  reduce using rule 5 (sentencia)
+
+
+State 40
+
+   35 expresion: AND expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 67
+    operando   go to state 28
+
+
+State 41
+
+   36 expresion: OR expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 68
+    operando   go to state 28
+
+
+State 42
+
+   37 expresion: NOT expresion •
+
+    $default  reduce using rule 37 (expresion)
+
+
+State 43
+
+   28 expresion: MOD expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 69
+    operando   go to state 28
+
+
+State 44
+
+   32 expresion: MET expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 70
+    operando   go to state 28
+
+
+State 45
+
+   33 expresion: GET expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 71
+    operando   go to state 28
+
+
+State 46
+
+   34 expresion: DISTINTO expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 72
+    operando   go to state 28
+
+
+State 47
+
+   29 expresion: '=' expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 73
+    operando   go to state 28
+
+
+State 48
+
+   30 expresion: '<' expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 74
+    operando   go to state 28
+
+
+State 49
+
+   31 expresion: '>' expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 75
+    operando   go to state 28
+
+
+State 50
+
+   24 expresion: '+' expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 76
+    operando   go to state 28
+
+
+State 51
+
+   25 expresion: '-' expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 77
+    operando   go to state 28
+
+
+State 52
+
+   26 expresion: '*' expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 78
+    operando   go to state 28
+
+
+State 53
+
+   27 expresion: '/' expresion • expresion
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 79
+    operando   go to state 28
+
+
+State 54
+
+   38 expresion: '(' ARRAY • expresion ')'
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 80
+    operando   go to state 28
+
+
+State 55
+
+   42 operando: '(' expresion • ')'
+
+    ')'  shift, and go to state 81
+
+
+State 56
+
+   13 sentencia: '(' LOOP WHILE • '(' expresion ')' DO lista_sentencias ')'
+
+    '('  shift, and go to state 82
+
+
+State 57
+
+    7 sentencia: '(' SETQ IDENTIF • expresion ')'
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 83
+    operando   go to state 28
+
+
+State 58
+
+    8 sentencia: '(' SETF IDENTIF • expresion ')'
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 84
+    operando   go to state 28
+
+
+State 59
+
+    9 sentencia: '(' DEFUN IDENTIF • '(' IDENTIF ')' lista_sentencias return ')'
+
+    '('  shift, and go to state 85
+
+
+State 60
+
+   10 sentencia: '(' DEFUN MAIN • '(' ')' lista_sentencias ')'
+
+    '('  shift, and go to state 86
+
+
+State 61
+
+   11 sentencia: '(' PRINT STRING • ')'
+
+    ')'  shift, and go to state 87
+
+
+State 62
+
+   12 sentencia: '(' PRINC IDENTIF • ')'
+
+    ')'  shift, and go to state 88
+
+
+State 63
+
+   19 if_simple: '(' IF '(' • expresion ')' lista_sentencias ')'
+   20 if_else_simple: '(' IF '(' • expresion ')' lista_sentencias lista_sentencias ')'
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 89
+    operando   go to state 28
+
+
+State 64
+
+   16 sentencia: '(' expresion ')' •
+
+    $default  reduce using rule 16 (sentencia)
+
+
+State 65
+
+    4 r_axioma: axioma •
+
+    $default  reduce using rule 4 (r_axioma)
+
+
+State 66
+
+    2 axioma: sentencia $@1 r_axioma •
+
+    $default  reduce using rule 2 (axioma)
+
+
+State 67
+
+   35 expresion: AND expresion expresion •
+
+    $default  reduce using rule 35 (expresion)
+
+
+State 68
+
+   36 expresion: OR expresion expresion •
+
+    $default  reduce using rule 36 (expresion)
+
+
+State 69
+
+   28 expresion: MOD expresion expresion •
+
+    $default  reduce using rule 28 (expresion)
+
+
+State 70
+
+   32 expresion: MET expresion expresion •
+
+    $default  reduce using rule 32 (expresion)
+
+
+State 71
+
+   33 expresion: GET expresion expresion •
+
+    $default  reduce using rule 33 (expresion)
+
+
+State 72
+
+   34 expresion: DISTINTO expresion expresion •
+
+    $default  reduce using rule 34 (expresion)
+
+
+State 73
+
+   29 expresion: '=' expresion expresion •
+
+    $default  reduce using rule 29 (expresion)
+
+
+State 74
+
+   30 expresion: '<' expresion expresion •
+
+    $default  reduce using rule 30 (expresion)
+
+
+State 75
+
+   31 expresion: '>' expresion expresion •
+
+    $default  reduce using rule 31 (expresion)
+
+
+State 76
+
+   24 expresion: '+' expresion expresion •
+
+    $default  reduce using rule 24 (expresion)
+
+
+State 77
+
+   25 expresion: '-' expresion expresion •
+
+    $default  reduce using rule 25 (expresion)
+
+
+State 78
+
+   26 expresion: '*' expresion expresion •
+
+    $default  reduce using rule 26 (expresion)
+
+
+State 79
+
+   27 expresion: '/' expresion expresion •
+
+    $default  reduce using rule 27 (expresion)
+
+
+State 80
+
+   38 expresion: '(' ARRAY expresion • ')'
+
+    ')'  shift, and go to state 90
+
+
+State 81
+
+   42 operando: '(' expresion ')' •
+
+    $default  reduce using rule 42 (operando)
+
+
+State 82
+
+   13 sentencia: '(' LOOP WHILE '(' • expresion ')' DO lista_sentencias ')'
+
+    NUMBER    shift, and go to state 9
+    IDENTIF   shift, and go to state 10
+    STRING    shift, and go to state 11
+    AND       shift, and go to state 12
+    OR        shift, and go to state 13
+    NOT       shift, and go to state 14
+    MOD       shift, and go to state 15
+    MET       shift, and go to state 16
+    GET       shift, and go to state 17
+    DISTINTO  shift, and go to state 18
+    '='       shift, and go to state 19
+    '<'       shift, and go to state 20
+    '>'       shift, and go to state 21
+    '+'       shift, and go to state 22
+    '-'       shift, and go to state 23
+    '*'       shift, and go to state 24
+    '/'       shift, and go to state 25
+    '('       shift, and go to state 26
+
+    expresion  go to state 91
+    operando   go to state 28
+
+
+State 83
+
+    7 sentencia: '(' SETQ IDENTIF expresion • ')'
+
+    ')'  shift, and go to state 92
+
+
+State 84
+
+    8 sentencia: '(' SETF IDENTIF expresion • ')'
+
+    ')'  shift, and go to state 93
+
+
+State 85
+
+    9 sentencia: '(' DEFUN IDENTIF '(' • IDENTIF ')' lista_sentencias return ')'
+
+    IDENTIF  shift, and go to state 94
+
+
+State 86
+
+   10 sentencia: '(' DEFUN MAIN '(' • ')' lista_sentencias ')'
+
+    ')'  shift, and go to state 95
+
+
+State 87
+
+   11 sentencia: '(' PRINT STRING ')' •
+
+    $default  reduce using rule 11 (sentencia)
+
+
+State 88
+
+   12 sentencia: '(' PRINC IDENTIF ')' •
+
+    $default  reduce using rule 12 (sentencia)
+
+
+State 89
+
+   19 if_simple: '(' IF '(' expresion • ')' lista_sentencias ')'
+   20 if_else_simple: '(' IF '(' expresion • ')' lista_sentencias lista_sentencias ')'
+
+    ')'  shift, and go to state 96
+
+
+State 90
+
+   38 expresion: '(' ARRAY expresion ')' •
+
+    $default  reduce using rule 38 (expresion)
+
+
+State 91
+
+   13 sentencia: '(' LOOP WHILE '(' expresion • ')' DO lista_sentencias ')'
+
+    ')'  shift, and go to state 97
+
+
+State 92
+
+    7 sentencia: '(' SETQ IDENTIF expresion ')' •
+
+    $default  reduce using rule 7 (sentencia)
+
+
+State 93
+
+    8 sentencia: '(' SETF IDENTIF expresion ')' •
+
+    $default  reduce using rule 8 (sentencia)
+
+
+State 94
+
+    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF • ')' lista_sentencias return ')'
+
+    ')'  shift, and go to state 98
+
+
+State 95
+
+   10 sentencia: '(' DEFUN MAIN '(' ')' • lista_sentencias ')'
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+
+    sentencia         go to state 99
+    if_simple         go to state 6
+    if_else_simple    go to state 7
+    lista_sentencias  go to state 100
+
+
+State 96
+
+   19 if_simple: '(' IF '(' expresion ')' • lista_sentencias ')'
+   20 if_else_simple: '(' IF '(' expresion ')' • lista_sentencias lista_sentencias ')'
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+
+    sentencia         go to state 99
+    if_simple         go to state 6
+    if_else_simple    go to state 7
+    lista_sentencias  go to state 101
+
+
+State 97
+
+   13 sentencia: '(' LOOP WHILE '(' expresion ')' • DO lista_sentencias ')'
+
+    DO  shift, and go to state 102
+
+
+State 98
+
+    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' • lista_sentencias return ')'
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+
+    sentencia         go to state 99
+    if_simple         go to state 6
+    if_else_simple    go to state 7
+    lista_sentencias  go to state 103
+
+
+State 99
+
+   21 lista_sentencias: sentencia •
+
+    $default  reduce using rule 21 (lista_sentencias)
+
+
+State 100
+
+   10 sentencia: '(' DEFUN MAIN '(' ')' lista_sentencias • ')'
+   22 lista_sentencias: lista_sentencias • sentencia
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+    ')'      shift, and go to state 104
+
+    sentencia       go to state 105
+    if_simple       go to state 6
+    if_else_simple  go to state 7
+
+
+State 101
+
+   19 if_simple: '(' IF '(' expresion ')' lista_sentencias • ')'
+   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias • lista_sentencias ')'
+   22 lista_sentencias: lista_sentencias • sentencia
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+    ')'      shift, and go to state 106
+
+    sentencia         go to state 107
+    if_simple         go to state 6
+    if_else_simple    go to state 7
+    lista_sentencias  go to state 108
+
+
+State 102
+
+   13 sentencia: '(' LOOP WHILE '(' expresion ')' DO • lista_sentencias ')'
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+
+    sentencia         go to state 99
+    if_simple         go to state 6
+    if_else_simple    go to state 7
+    lista_sentencias  go to state 109
+
+
+State 103
+
+    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias • return ')'
+   22 lista_sentencias: lista_sentencias • sentencia
+
+    IDENTIF  shift, and go to state 110
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+
+    $default  reduce using rule 17 (return)
+
+    sentencia       go to state 105
+    return          go to state 111
+    if_simple       go to state 6
+    if_else_simple  go to state 7
+
+
+State 104
+
+   10 sentencia: '(' DEFUN MAIN '(' ')' lista_sentencias ')' •
+
+    $default  reduce using rule 10 (sentencia)
+
+
+State 105
+
+   22 lista_sentencias: lista_sentencias sentencia •
+
+    $default  reduce using rule 22 (lista_sentencias)
+
+
+State 106
+
+   19 if_simple: '(' IF '(' expresion ')' lista_sentencias ')' •
+
+    $default  reduce using rule 19 (if_simple)
+
+
+State 107
+
+   21 lista_sentencias: sentencia •
+   22                 | lista_sentencias sentencia •
+
+    IDENTIF   reduce using rule 21 (lista_sentencias)
+    IDENTIF   [reduce using rule 22 (lista_sentencias)]
+    '@'       reduce using rule 21 (lista_sentencias)
+    '@'       [reduce using rule 22 (lista_sentencias)]
+    '('       reduce using rule 21 (lista_sentencias)
+    '('       [reduce using rule 22 (lista_sentencias)]
+    ')'       reduce using rule 21 (lista_sentencias)
+    ')'       [reduce using rule 22 (lista_sentencias)]
+    $default  reduce using rule 21 (lista_sentencias)
+
+    reduce/reduce conflict on tokens IDENTIF, '@', '(', ')':
+       21 lista_sentencias: sentencia •
+       22 lista_sentencias: lista_sentencias sentencia •
+      Example: '(' IF '(' expresion ')' lista_sentencias sentencia • ')'
+      First reduce derivation
+        sentencia
+        ↳ 15: if_else_simple
+              ↳ 20: '(' IF '(' expresion ')' lista_sentencias lista_sentencias  ')'
+                                                              ↳ 21: sentencia •
+      Second reduce derivation
+        sentencia
+        ↳ 14: if_simple
+              ↳ 19: '(' IF '(' expresion ')' lista_sentencias                   ')'
+                                             ↳ 22: lista_sentencias sentencia •
+
+
+
+State 108
+
+   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias lista_sentencias • ')'
+   22 lista_sentencias: lista_sentencias • sentencia
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+    ')'      shift, and go to state 112
+
+    sentencia       go to state 105
+    if_simple       go to state 6
+    if_else_simple  go to state 7
+
+
+State 109
+
+   13 sentencia: '(' LOOP WHILE '(' expresion ')' DO lista_sentencias • ')'
+   22 lista_sentencias: lista_sentencias • sentencia
+
+    IDENTIF  shift, and go to state 1
+    '@'      shift, and go to state 2
+    '('      shift, and go to state 3
+    ')'      shift, and go to state 113
+
+    sentencia       go to state 105
+    if_simple       go to state 6
+    if_else_simple  go to state 7
+
+
+State 110
+
+    5 sentencia: IDENTIF • '=' expresion
+   18 return: IDENTIF •
+
+    '='  shift, and go to state 8
+
+    $default  reduce using rule 18 (return)
+
+
+State 111
+
+    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return • ')'
+
+    ')'  shift, and go to state 114
+
+
+State 112
+
+   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias lista_sentencias ')' •
+
+    $default  reduce using rule 20 (if_else_simple)
+
+
+State 113
+
+   13 sentencia: '(' LOOP WHILE '(' expresion ')' DO lista_sentencias ')' •
+
+    $default  reduce using rule 13 (sentencia)
+
+
+State 114
+
+    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return ')' •
+
+    $default  reduce using rule 9 (sentencia)

@@ -97,20 +97,11 @@ void vacial_variables_locales() {
 
 
 %right '='                                          // asignación
-%left OR                                            // or lógico
-%left AND                                           // and lógico
-%right NOT                                          // not lógico
-%left IGUAL                                         // comparación de igualdad
-%left DISTINTO                                      // comparación de desigualdad
-%left '<'                                           // comparación numérica
-%left '>'                                           // comparación numérica
-%left MENORIGUAL                                    // comparación numérica                                    
-%left MAYORIGUAL                                    // comparación numérica
-%left '+'                                           // suma
-%left '-'                                           // resta
-%left '*'                                           // multiplicación
-%left '/'                                           // división
-%left '%'                                           // módulo
+%left OR AND NOT                                    // or and not lógicos
+%left IGUAL DISTINTO                                // comparación de igualdad y desigualdad
+%left '<' '>' MENORIGUAL MAYORIGUAL                 // comparación numérica
+%left '+' '-'                                       // suma y resta
+%left '*' '/' '%'                                   // multiplicación, división y modulo
 %left UNARY_SIGN                                    // signo unario
 
 
@@ -148,7 +139,7 @@ conjunto_vars_global:
                 sprintf(temp, "(setq %s 0)", $1.code); 
                 $$.code = gen_code(temp); 
                 }
-            | IDENTIF '=' NUMBER { 
+            | IDENTIF '=' expresion { 
                 sprintf(temp, "(setq %s %d)", 
                 $1.code, $3.value); $$.code = gen_code(temp); 
                 }
@@ -156,15 +147,15 @@ conjunto_vars_global:
                 sprintf(temp, "%s\n(setq %s 0)", $1.code, $3.code); 
                 $$.code = gen_code(temp); 
                 }
-            | conjunto_vars_global ',' IDENTIF '=' NUMBER { 
+            | conjunto_vars_global ',' IDENTIF '=' expresion { 
                 sprintf(temp, "%s\n(setq %s %d)", $1.code, $3.code, $5.value); 
                 $$.code = gen_code(temp); 
                 }
-            | IDENTIF '[' NUMBER ']' { 
+            | IDENTIF '[' expresion ']' { 
                 sprintf(temp, "(setq %s (make-array %d))", $1.code, $3.value); 
                 $$.code = gen_code(temp); 
                 } 
-            | conjunto_vars_global ',' IDENTIF '[' NUMBER ']' { 
+            | conjunto_vars_global ',' IDENTIF '[' expresion ']' { 
                 sprintf(temp, "%s\n(setq %s (make-array %d))", $1.code, $3.code, $5.value); 
                 $$.code = gen_code(temp); 
                 }
@@ -346,7 +337,7 @@ sentencia_bloque:
                 $$.code = gen_code(temp);
                 }
             | FOR '(' asignacion_inicial ';' expresion ';' aumento ')' '{' bloque_sentencias '}' {
-                sprintf(temp, "(%s\n(loop while %s do\n(\n%s\n%s)))", 
+                sprintf(temp, "%s\n(loop while %s do\n%s\n%s)", 
                         $3.code, $5.code, $10.code, $7.code);
                 $$.code = gen_code(temp);
                 }
@@ -354,7 +345,11 @@ sentencia_bloque:
 
 aumento:
             IDENTIF '=' expresion {
-                sprintf(temp, "(setq %s %s)", $1.code, $3.code);
+                if (!es_variable_local($1.code)) {
+                    sprintf(temp, "(setf %s %s)", $1.code, $3.code);
+                } else {
+                    sprintf(temp, "(setf %s_%s %s)", funcion_actual, $1.code, $3.code);
+                }
                 $$.code = gen_code(temp);
                 }
             ;
@@ -413,24 +408,24 @@ lista_declaracion:
                 sprintf(temp, "(setq %s_%s 0)", funcion_actual, $1.code);
                 $$.code = gen_code(temp); 
             }
-            | IDENTIF '=' NUMBER { 
+            | IDENTIF '=' expresion { 
                 añadir_var_local($1.code);
                 sprintf(temp, "(setq %s_%s %d)", funcion_actual, $1.code, $3.value);
                 $$.code = gen_code(temp); 
             }
-            | IDENTIF '[' NUMBER ']' { 
+            | IDENTIF '[' expresion ']' { 
                 añadir_var_local($1.code);
                 sprintf(temp, "(setq %s_%s (make-array %d))", funcion_actual, $1.code, $3.value);
+                $$.code = gen_code(temp); 
+            }
+            | lista_declaracion ',' IDENTIF '=' expresion {
+                añadir_var_local($3.code);
+                sprintf(temp, "%s\n(setq %s_%s %d)", $1.code, funcion_actual, $3.code, $5.value);
                 $$.code = gen_code(temp); 
             }
             | lista_declaracion ',' IDENTIF {
                 añadir_var_local($3.code);
                 sprintf(temp, "%s\n(setq %s_%s 0)", $1.code, funcion_actual, $3.code);
-                $$.code = gen_code(temp); 
-            }
-            | lista_declaracion ',' IDENTIF '=' NUMBER {
-                añadir_var_local($3.code);
-                sprintf(temp, "%s\n(setq %s_%s %d)", $1.code, funcion_actual, $3.code, $5.value);
                 $$.code = gen_code(temp); 
             }
             ;
@@ -580,8 +575,6 @@ lista_argumentos:
                 $$.code = gen_code(temp); 
                 }
             ;
-
-
 
 
 %%                            // SECCION 4    Codigo en C
