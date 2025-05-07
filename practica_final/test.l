@@ -1,8 +1,12 @@
 
-(defun mifuncion ()
-(print "Una prueba")
-)
+(setq resultado 0)
+(setq n 0)
 (defun main ()
-(mifuncion )
+(setf n 7)
+(setf resultado 1)
+(loop while (> n 1) do
+(setf resultado (* resultado n))
+(setf n (- n 1)))
+(princ resultado)
 )
- (main)
+ (main) 
