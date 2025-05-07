@@ -367,29 +367,14 @@ asignacion_inicial:
 
 if_else:
             IF '(' expresion ')' '{' bloque_sentencias '}' ELSE '{' bloque_sentencias '}' {
-                if (strchr($6.code, '\n') != NULL && strchr($10.code, '\n') != NULL) {
                     sprintf(temp, "(if %s\n(progn\n%s)\n(progn\n%s))", $3.code, $6.code, $10.code);
-                } 
-                else if (strchr($6.code, '\n') != NULL) {
-                    sprintf(temp, "(if %s\n(progn\n%s)\n%s)", $3.code, $6.code, $10.code);
-                } 
-                else if (strchr($10.code, '\n') != NULL) {
-                    sprintf(temp, "(if %s\n%s\n(progn\n%s))", $3.code, $6.code, $10.code);
-                } 
-                else {
-                    sprintf(temp, "(if %s\n%s\n%s\n)", $3.code, $6.code, $10.code);
-                }
                     $$.code = gen_code(temp);
                 }
             ;
 
 if_solo:
             IF '(' expresion ')' '{' bloque_sentencias '}' {
-                if (strchr($6.code, '\n') == NULL) {
-                    sprintf(temp, "(if %s\n%s)", $3.code, $6.code);
-                } else {
                     sprintf(temp, "(if %s\n(progn %s))", $3.code, $6.code);
-                }
                 $$.code = gen_code(temp);
                 }
             ;
@@ -630,7 +615,7 @@ typedef struct s_keyword { // para las palabras reservadas de C
     int token ;
 } t_keyword ;
 
-t_keyword keywords [] = { // define las palabras reservadas y los
+t_keyword keywords [] = { // define las palabras reservadas y los --- Se ponen las llaves para evitar warnings de compilacion
     {"main",        MAIN},            // y los token asociados
     {"int",         INTEGER},         // tipo de dato entero
     {"if",          IF},              // sentencia if
