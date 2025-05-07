@@ -64,7 +64,7 @@ int es_variable_local(char *nombre) {
     return 0;
 }
 
-void añadir_var_local(char *nombre) {
+void anadir_var_local(char *nombre) {
     tipo_variable_local *variable_nueva = (tipo_variable_local *)mi_malloc(sizeof(tipo_variable_local));
     variable_nueva->nombre = gen_code(nombre);
     variable_nueva->siguiente = variables_locales;
@@ -320,9 +320,9 @@ sentencia_simple:
             |RETURN expresion {
                 if (funcion_actual != NULL) {
                     if (!es_variable_local($2.code)) {
-                        sprintf(temp, "%s", $2.code);
+                        sprintf(temp, "(return-from %s %s)", funcion_actual, $2.code);
                     } else {
-                        sprintf(temp, "(%s_%s)", funcion_actual, $2.code);
+                        sprintf(temp, "(return_from %s %s_%s)", funcion_actual, funcion_actual, $2.code);
                     }
                 }
                 $$.code = gen_code(temp);
@@ -404,27 +404,27 @@ declaracion_variable:
 
 lista_declaracion: 
             IDENTIF { 
-                añadir_var_local($1.code);
+                anadir_var_local($1.code);
                 sprintf(temp, "(setq %s_%s 0)", funcion_actual, $1.code);
                 $$.code = gen_code(temp); 
             }
             | IDENTIF '=' expresion { 
-                añadir_var_local($1.code);
+                anadir_var_local($1.code);
                 sprintf(temp, "(setq %s_%s %d)", funcion_actual, $1.code, $3.value);
                 $$.code = gen_code(temp); 
             }
             | IDENTIF '[' expresion ']' { 
-                añadir_var_local($1.code);
+                anadir_var_local($1.code);
                 sprintf(temp, "(setq %s_%s (make-array %d))", funcion_actual, $1.code, $3.value);
                 $$.code = gen_code(temp); 
             }
             | lista_declaracion ',' IDENTIF '=' expresion {
-                añadir_var_local($3.code);
+                anadir_var_local($3.code);
                 sprintf(temp, "%s\n(setq %s_%s %d)", $1.code, funcion_actual, $3.code, $5.value);
                 $$.code = gen_code(temp); 
             }
             | lista_declaracion ',' IDENTIF {
-                añadir_var_local($3.code);
+                anadir_var_local($3.code);
                 sprintf(temp, "%s\n(setq %s_%s 0)", $1.code, funcion_actual, $3.code);
                 $$.code = gen_code(temp); 
             }
