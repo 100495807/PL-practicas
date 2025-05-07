@@ -197,6 +197,8 @@ expresion:      operando                  { $$ = $1 ; }
                                              $$.code = gen_code (temp) ; }
             |   NOT expresion_parentesis  %prec UNARY_SIGN        { sprintf (temp, "%s 0=", $2.code) ;
                                              $$.code = gen_code (temp) ; }
+            |   '(' '-' expresion_parentesis ')' %prec UNARY_SIGN  { sprintf (temp, "-%s", $3.code) ;
+                                             $$.code = gen_code (temp) ; }
             ;
 
 
