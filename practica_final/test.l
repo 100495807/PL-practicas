@@ -1,12 +1,15 @@
 
-(setq resultado 0)
-(setq n 0)
+(setq a 0)
+(setq b 0)
 (defun main ()
-(setf n 7)
-(setf resultado 1)
-(loop while (> n 1) do
-(setf resultado (* resultado n))
-(setf n (- n 1)))
-(princ resultado)
+(setf a 10)
+(loop while (> a 0) do
+(princ a)
+(if (= (mod a 2) 0)
+(progn
+(print " es par "))
+(progn
+(print " es impar ")))
+(setf a (- a 1)))
 )
- (main) 
+ (main)

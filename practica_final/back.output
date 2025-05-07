@@ -1,23 +1,11 @@
-Nonterminals useless in grammar
-
-    termino
-
-
 Terminals unused in grammar
 
     INTEGER
     E
-    PROGN
 
 
-Rules useless in grammar
-
-   43 termino: operando
-   44        | '+' operando
-   45        | '-' operando
-
-
-State 107 conflicts: 4 reduce/reduce
+State 72 conflicts: 27 shift/reduce
+State 98 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -26,1797 +14,2338 @@ Grammar
 
     1 $@1: ε
 
-    2 axioma: sentencia $@1 r_axioma
+    2 axioma: '(' sentencia ')' $@1 r_axioma
 
     3 r_axioma: ε
     4         | axioma
 
-    5 sentencia: IDENTIF '=' expresion
-    6          | '@' expresion
-    7          | '(' SETQ IDENTIF expresion ')'
-    8          | '(' SETF IDENTIF expresion ')'
-    9          | '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return ')'
-   10          | '(' DEFUN MAIN '(' ')' lista_sentencias ')'
-   11          | '(' PRINT STRING ')'
-   12          | '(' PRINC IDENTIF ')'
-   13          | '(' LOOP WHILE '(' expresion ')' DO lista_sentencias ')'
-   14          | if_simple
-   15          | if_else_simple
-   16          | '(' expresion ')'
+    5 sentencia: SETQ IDENTIF expresion_parentesis
+    6          | SETF IDENTIF expresion_parentesis
+    7          | DEFUN MAIN '(' ')' lista_sentencias
+    8          | PRINT STRING
+    9          | PRINC expresion_parentesis
+   10          | LOOP WHILE expresion_parentesis DO lista_sentencias
+   11          | MAIN
+   12          | if
+   13          | expresion
+   14          | RETURN_FROM expresion
 
-   17 return: ε
-   18       | IDENTIF
+   15 expresion_parentesis: '(' expresion ')'
+   16                     | expresion
 
-   19 if_simple: '(' IF '(' expresion ')' lista_sentencias ')'
+   17 if: IF expresion_parentesis sentencia_if sentencia_else
 
-   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias lista_sentencias ')'
+   18 sentencia_if: '(' PROGN lista_sentencias ')'
+   19             | sentencia
 
-   21 lista_sentencias: sentencia
-   22                 | lista_sentencias sentencia
+   20 sentencia_else: '(' PROGN lista_sentencias ')'
+   21               | sentencia
+   22               | ε
 
-   23 expresion: operando
-   24          | '+' expresion expresion
-   25          | '-' expresion expresion
-   26          | '*' expresion expresion
-   27          | '/' expresion expresion
-   28          | MOD expresion expresion
-   29          | '=' expresion expresion
-   30          | '<' expresion expresion
-   31          | '>' expresion expresion
-   32          | MET expresion expresion
-   33          | GET expresion expresion
-   34          | DISTINTO expresion expresion
-   35          | AND expresion expresion
-   36          | OR expresion expresion
-   37          | NOT expresion
-   38          | '(' ARRAY expresion ')'
+   23 lista_sentencias: '(' sentencia ')'
+   24                 | '(' sentencia ')' lista_sentencias
 
-   39 operando: IDENTIF
-   40         | NUMBER
-   41         | STRING
-   42         | '(' expresion ')'
+   25 expresion: operando
+   26          | '+' expresion_parentesis expresion_parentesis
+   27          | '-' expresion_parentesis expresion_parentesis
+   28          | '*' expresion_parentesis expresion_parentesis
+   29          | '/' expresion_parentesis expresion_parentesis
+   30          | MOD expresion_parentesis expresion_parentesis
+   31          | '=' expresion_parentesis expresion_parentesis
+   32          | '<' expresion_parentesis expresion_parentesis
+   33          | '>' expresion_parentesis expresion_parentesis
+   34          | MET expresion_parentesis expresion_parentesis
+   35          | GET expresion_parentesis expresion_parentesis
+   36          | DISTINTO expresion_parentesis expresion_parentesis
+   37          | AND expresion_parentesis expresion_parentesis
+   38          | OR expresion_parentesis expresion_parentesis
+   39          | NOT expresion_parentesis
+
+   40 operando: IDENTIF
+   41         | NUMBER
+   42         | STRING
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    '(' (40) 7 8 9 10 11 12 13 16 19 20 38 42
-    ')' (41) 7 8 9 10 11 12 13 16 19 20 38 42
-    '*' (42) 26
-    '+' (43) 24
-    '-' (45) 25
-    '/' (47) 27
-    '<' (60) 30
-    '=' (61) 5 29
-    '>' (62) 31
-    '@' (64) 6
+    '(' (40) 2 7 15 18 20 23 24
+    ')' (41) 2 7 15 18 20 23 24
+    '*' (42) 28
+    '+' (43) 26
+    '-' (45) 27
+    '/' (47) 29
+    '<' (60) 32
+    '=' (61) 31
+    '>' (62) 33
     error (256)
-    NUMBER (258) 40
-    IDENTIF (259) 5 7 8 9 12 18 39
+    NUMBER (258) 41
+    IDENTIF (259) 5 6 40
     INTEGER (260)
-    STRING (261) 11 41
-    MAIN (262) 10
-    WHILE (263) 13
-    LOOP (264) 13
-    DO (265) 13
-    SETQ (266) 7
-    SETF (267) 8
-    DEFUN (268) 9 10
-    PRINT (269) 11
-    PRINC (270) 12
-    AND (271) 35
-    OR (272) 36
-    NOT (273) 37
-    MOD (274) 28
+    STRING (261) 8 42
+    MAIN (262) 7 11
+    WHILE (263) 10
+    LOOP (264) 10
+    DO (265) 10
+    SETQ (266) 5
+    SETF (267) 6
+    DEFUN (268) 7
+    PRINT (269) 8
+    PRINC (270) 9
+    AND (271) 37
+    OR (272) 38
+    NOT (273) 39
+    MOD (274) 30
     E (275)
-    MET (276) 32
-    GET (277) 33
-    DISTINTO (278) 34
+    MET (276) 34
+    GET (277) 35
+    DISTINTO (278) 36
     UNARY_SIGN (279)
-    IF (280) 19 20
-    PROGN (281)
-    ARRAY (282) 38
+    IF (280) 17
+    PROGN (281) 18 20
+    RETURN_FROM (282) 14
 
 
 Nonterminals, with rules where they appear
 
-    $accept (38)
+    $accept (37)
         on left: 0
-    axioma (39)
+    axioma (38)
         on left: 2
         on right: 0 4
-    $@1 (40)
+    $@1 (39)
         on left: 1
         on right: 2
-    r_axioma (41)
+    r_axioma (40)
         on left: 3 4
         on right: 2
-    sentencia (42)
-        on left: 5 6 7 8 9 10 11 12 13 14 15 16
-        on right: 2 21 22
-    return (43)
-        on left: 17 18
-        on right: 9
-    if_simple (44)
-        on left: 19
-        on right: 14
-    if_else_simple (45)
-        on left: 20
-        on right: 15
+    sentencia (41)
+        on left: 5 6 7 8 9 10 11 12 13 14
+        on right: 2 19 21 23 24
+    expresion_parentesis (42)
+        on left: 15 16
+        on right: 5 6 9 10 17 26 27 28 29 30 31 32 33 34 35 36 37 38 39
+    if (43)
+        on left: 17
+        on right: 12
+    sentencia_if (44)
+        on left: 18 19
+        on right: 17
+    sentencia_else (45)
+        on left: 20 21 22
+        on right: 17
     lista_sentencias (46)
-        on left: 21 22
-        on right: 9 10 13 19 20 22
+        on left: 23 24
+        on right: 7 10 18 20 24
     expresion (47)
-        on left: 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38
-        on right: 5 6 7 8 13 16 19 20 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 42
+        on left: 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
+        on right: 13 14 15 16
     operando (48)
-        on left: 39 40 41 42
-        on right: 23
+        on left: 40 41 42
+        on right: 25
 
 
 State 0
 
     0 $accept: • axioma $end
 
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
+    '('  shift, and go to state 1
 
-    axioma          go to state 4
-    sentencia       go to state 5
-    if_simple       go to state 6
-    if_else_simple  go to state 7
+    axioma  go to state 2
 
 
 State 1
 
-    5 sentencia: IDENTIF • '=' expresion
+    2 axioma: '(' • sentencia ')' $@1 r_axioma
 
-    '='  shift, and go to state 8
+    NUMBER       shift, and go to state 3
+    IDENTIF      shift, and go to state 4
+    STRING       shift, and go to state 5
+    MAIN         shift, and go to state 6
+    LOOP         shift, and go to state 7
+    SETQ         shift, and go to state 8
+    SETF         shift, and go to state 9
+    DEFUN        shift, and go to state 10
+    PRINT        shift, and go to state 11
+    PRINC        shift, and go to state 12
+    AND          shift, and go to state 13
+    OR           shift, and go to state 14
+    NOT          shift, and go to state 15
+    MOD          shift, and go to state 16
+    MET          shift, and go to state 17
+    GET          shift, and go to state 18
+    DISTINTO     shift, and go to state 19
+    IF           shift, and go to state 20
+    RETURN_FROM  shift, and go to state 21
+    '='          shift, and go to state 22
+    '<'          shift, and go to state 23
+    '>'          shift, and go to state 24
+    '+'          shift, and go to state 25
+    '-'          shift, and go to state 26
+    '*'          shift, and go to state 27
+    '/'          shift, and go to state 28
+
+    sentencia  go to state 29
+    if         go to state 30
+    expresion  go to state 31
+    operando   go to state 32
 
 
 State 2
 
-    6 sentencia: '@' • expresion
+    0 $accept: axioma • $end
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 27
-    operando   go to state 28
+    $end  shift, and go to state 33
 
 
 State 3
 
-    7 sentencia: '(' • SETQ IDENTIF expresion ')'
-    8          | '(' • SETF IDENTIF expresion ')'
-    9          | '(' • DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return ')'
-   10          | '(' • DEFUN MAIN '(' ')' lista_sentencias ')'
-   11          | '(' • PRINT STRING ')'
-   12          | '(' • PRINC IDENTIF ')'
-   13          | '(' • LOOP WHILE '(' expresion ')' DO lista_sentencias ')'
-   16          | '(' • expresion ')'
-   19 if_simple: '(' • IF '(' expresion ')' lista_sentencias ')'
-   20 if_else_simple: '(' • IF '(' expresion ')' lista_sentencias lista_sentencias ')'
-
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    LOOP      shift, and go to state 29
-    SETQ      shift, and go to state 30
-    SETF      shift, and go to state 31
-    DEFUN     shift, and go to state 32
-    PRINT     shift, and go to state 33
-    PRINC     shift, and go to state 34
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    IF        shift, and go to state 35
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 36
-    operando   go to state 28
-
-
-State 4
-
-    0 $accept: axioma • $end
-
-    $end  shift, and go to state 37
-
-
-State 5
-
-    2 axioma: sentencia • $@1 r_axioma
-
-    $default  reduce using rule 1 ($@1)
-
-    $@1  go to state 38
-
-
-State 6
-
-   14 sentencia: if_simple •
-
-    $default  reduce using rule 14 (sentencia)
-
-
-State 7
-
-   15 sentencia: if_else_simple •
-
-    $default  reduce using rule 15 (sentencia)
-
-
-State 8
-
-    5 sentencia: IDENTIF '=' • expresion
-
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 39
-    operando   go to state 28
-
-
-State 9
-
-   40 operando: NUMBER •
-
-    $default  reduce using rule 40 (operando)
-
-
-State 10
-
-   39 operando: IDENTIF •
-
-    $default  reduce using rule 39 (operando)
-
-
-State 11
-
-   41 operando: STRING •
+   41 operando: NUMBER •
 
     $default  reduce using rule 41 (operando)
 
 
+State 4
+
+   40 operando: IDENTIF •
+
+    $default  reduce using rule 40 (operando)
+
+
+State 5
+
+   42 operando: STRING •
+
+    $default  reduce using rule 42 (operando)
+
+
+State 6
+
+   11 sentencia: MAIN •
+
+    $default  reduce using rule 11 (sentencia)
+
+
+State 7
+
+   10 sentencia: LOOP • WHILE expresion_parentesis DO lista_sentencias
+
+    WHILE  shift, and go to state 34
+
+
+State 8
+
+    5 sentencia: SETQ • IDENTIF expresion_parentesis
+
+    IDENTIF  shift, and go to state 35
+
+
+State 9
+
+    6 sentencia: SETF • IDENTIF expresion_parentesis
+
+    IDENTIF  shift, and go to state 36
+
+
+State 10
+
+    7 sentencia: DEFUN • MAIN '(' ')' lista_sentencias
+
+    MAIN  shift, and go to state 37
+
+
+State 11
+
+    8 sentencia: PRINT • STRING
+
+    STRING  shift, and go to state 38
+
+
 State 12
 
-   35 expresion: AND • expresion expresion
+    9 sentencia: PRINC • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 40
-    operando   go to state 28
+    expresion_parentesis  go to state 40
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 13
 
-   36 expresion: OR • expresion expresion
+   37 expresion: AND • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 41
-    operando   go to state 28
+    expresion_parentesis  go to state 42
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 14
 
-   37 expresion: NOT • expresion
+   38 expresion: OR • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 42
-    operando   go to state 28
+    expresion_parentesis  go to state 43
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 15
 
-   28 expresion: MOD • expresion expresion
+   39 expresion: NOT • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 43
-    operando   go to state 28
+    expresion_parentesis  go to state 44
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 16
 
-   32 expresion: MET • expresion expresion
+   30 expresion: MOD • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 44
-    operando   go to state 28
+    expresion_parentesis  go to state 45
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 17
 
-   33 expresion: GET • expresion expresion
+   34 expresion: MET • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 45
-    operando   go to state 28
+    expresion_parentesis  go to state 46
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 18
 
-   34 expresion: DISTINTO • expresion expresion
+   35 expresion: GET • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 46
-    operando   go to state 28
+    expresion_parentesis  go to state 47
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 19
 
-   29 expresion: '=' • expresion expresion
+   36 expresion: DISTINTO • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 47
-    operando   go to state 28
+    expresion_parentesis  go to state 48
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 20
 
-   30 expresion: '<' • expresion expresion
+   17 if: IF • expresion_parentesis sentencia_if sentencia_else
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 48
-    operando   go to state 28
+    expresion_parentesis  go to state 49
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 21
 
-   31 expresion: '>' • expresion expresion
+   14 sentencia: RETURN_FROM • expresion
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
 
-    expresion  go to state 49
-    operando   go to state 28
+    expresion  go to state 50
+    operando   go to state 32
 
 
 State 22
 
-   24 expresion: '+' • expresion expresion
+   31 expresion: '=' • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 50
-    operando   go to state 28
+    expresion_parentesis  go to state 51
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 23
 
-   25 expresion: '-' • expresion expresion
+   32 expresion: '<' • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 51
-    operando   go to state 28
+    expresion_parentesis  go to state 52
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 24
 
-   26 expresion: '*' • expresion expresion
+   33 expresion: '>' • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 52
-    operando   go to state 28
+    expresion_parentesis  go to state 53
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 25
 
-   27 expresion: '/' • expresion expresion
+   26 expresion: '+' • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 53
-    operando   go to state 28
+    expresion_parentesis  go to state 54
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 26
 
-   38 expresion: '(' • ARRAY expresion ')'
-   42 operando: '(' • expresion ')'
+   27 expresion: '-' • expresion_parentesis expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    ARRAY     shift, and go to state 54
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 55
-    operando   go to state 28
+    expresion_parentesis  go to state 55
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 27
 
-    6 sentencia: '@' expresion •
+   28 expresion: '*' • expresion_parentesis expresion_parentesis
 
-    $default  reduce using rule 6 (sentencia)
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 56
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 28
 
-   23 expresion: operando •
+   29 expresion: '/' • expresion_parentesis expresion_parentesis
 
-    $default  reduce using rule 23 (expresion)
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 57
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 29
 
-   13 sentencia: '(' LOOP • WHILE '(' expresion ')' DO lista_sentencias ')'
+    2 axioma: '(' sentencia • ')' $@1 r_axioma
 
-    WHILE  shift, and go to state 56
+    ')'  shift, and go to state 58
 
 
 State 30
 
-    7 sentencia: '(' SETQ • IDENTIF expresion ')'
+   12 sentencia: if •
 
-    IDENTIF  shift, and go to state 57
+    $default  reduce using rule 12 (sentencia)
 
 
 State 31
 
-    8 sentencia: '(' SETF • IDENTIF expresion ')'
+   13 sentencia: expresion •
 
-    IDENTIF  shift, and go to state 58
+    $default  reduce using rule 13 (sentencia)
 
 
 State 32
 
-    9 sentencia: '(' DEFUN • IDENTIF '(' IDENTIF ')' lista_sentencias return ')'
-   10          | '(' DEFUN • MAIN '(' ')' lista_sentencias ')'
+   25 expresion: operando •
 
-    IDENTIF  shift, and go to state 59
-    MAIN     shift, and go to state 60
+    $default  reduce using rule 25 (expresion)
 
 
 State 33
-
-   11 sentencia: '(' PRINT • STRING ')'
-
-    STRING  shift, and go to state 61
-
-
-State 34
-
-   12 sentencia: '(' PRINC • IDENTIF ')'
-
-    IDENTIF  shift, and go to state 62
-
-
-State 35
-
-   19 if_simple: '(' IF • '(' expresion ')' lista_sentencias ')'
-   20 if_else_simple: '(' IF • '(' expresion ')' lista_sentencias lista_sentencias ')'
-
-    '('  shift, and go to state 63
-
-
-State 36
-
-   16 sentencia: '(' expresion • ')'
-
-    ')'  shift, and go to state 64
-
-
-State 37
 
     0 $accept: axioma $end •
 
     $default  accept
 
 
+State 34
+
+   10 sentencia: LOOP WHILE • expresion_parentesis DO lista_sentencias
+
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 59
+    expresion             go to state 41
+    operando              go to state 32
+
+
+State 35
+
+    5 sentencia: SETQ IDENTIF • expresion_parentesis
+
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 60
+    expresion             go to state 41
+    operando              go to state 32
+
+
+State 36
+
+    6 sentencia: SETF IDENTIF • expresion_parentesis
+
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 61
+    expresion             go to state 41
+    operando              go to state 32
+
+
+State 37
+
+    7 sentencia: DEFUN MAIN • '(' ')' lista_sentencias
+
+    '('  shift, and go to state 62
+
+
 State 38
 
-    2 axioma: sentencia $@1 • r_axioma
+    8 sentencia: PRINT STRING •
 
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-
-    $default  reduce using rule 3 (r_axioma)
-
-    axioma          go to state 65
-    r_axioma        go to state 66
-    sentencia       go to state 5
-    if_simple       go to state 6
-    if_else_simple  go to state 7
+    $default  reduce using rule 8 (sentencia)
 
 
 State 39
 
-    5 sentencia: IDENTIF '=' expresion •
+   15 expresion_parentesis: '(' • expresion ')'
 
-    $default  reduce using rule 5 (sentencia)
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+
+    expresion  go to state 63
+    operando   go to state 32
 
 
 State 40
 
-   35 expresion: AND expresion • expresion
+    9 sentencia: PRINC expresion_parentesis •
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 67
-    operando   go to state 28
+    $default  reduce using rule 9 (sentencia)
 
 
 State 41
 
-   36 expresion: OR expresion • expresion
+   16 expresion_parentesis: expresion •
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 68
-    operando   go to state 28
+    $default  reduce using rule 16 (expresion_parentesis)
 
 
 State 42
 
-   37 expresion: NOT expresion •
+   37 expresion: AND expresion_parentesis • expresion_parentesis
 
-    $default  reduce using rule 37 (expresion)
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 64
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 43
 
-   28 expresion: MOD expresion • expresion
+   38 expresion: OR expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 69
-    operando   go to state 28
+    expresion_parentesis  go to state 65
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 44
 
-   32 expresion: MET expresion • expresion
+   39 expresion: NOT expresion_parentesis •
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 70
-    operando   go to state 28
+    $default  reduce using rule 39 (expresion)
 
 
 State 45
 
-   33 expresion: GET expresion • expresion
+   30 expresion: MOD expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 71
-    operando   go to state 28
+    expresion_parentesis  go to state 66
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 46
 
-   34 expresion: DISTINTO expresion • expresion
+   34 expresion: MET expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 72
-    operando   go to state 28
+    expresion_parentesis  go to state 67
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 47
 
-   29 expresion: '=' expresion • expresion
+   35 expresion: GET expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 73
-    operando   go to state 28
+    expresion_parentesis  go to state 68
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 48
 
-   30 expresion: '<' expresion • expresion
+   36 expresion: DISTINTO expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 74
-    operando   go to state 28
+    expresion_parentesis  go to state 69
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 49
 
-   31 expresion: '>' expresion • expresion
+   17 if: IF expresion_parentesis • sentencia_if sentencia_else
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER       shift, and go to state 3
+    IDENTIF      shift, and go to state 4
+    STRING       shift, and go to state 5
+    MAIN         shift, and go to state 6
+    LOOP         shift, and go to state 7
+    SETQ         shift, and go to state 8
+    SETF         shift, and go to state 9
+    DEFUN        shift, and go to state 10
+    PRINT        shift, and go to state 11
+    PRINC        shift, and go to state 12
+    AND          shift, and go to state 13
+    OR           shift, and go to state 14
+    NOT          shift, and go to state 15
+    MOD          shift, and go to state 16
+    MET          shift, and go to state 17
+    GET          shift, and go to state 18
+    DISTINTO     shift, and go to state 19
+    IF           shift, and go to state 20
+    RETURN_FROM  shift, and go to state 21
+    '='          shift, and go to state 22
+    '<'          shift, and go to state 23
+    '>'          shift, and go to state 24
+    '+'          shift, and go to state 25
+    '-'          shift, and go to state 26
+    '*'          shift, and go to state 27
+    '/'          shift, and go to state 28
+    '('          shift, and go to state 70
 
-    expresion  go to state 75
-    operando   go to state 28
+    sentencia     go to state 71
+    if            go to state 30
+    sentencia_if  go to state 72
+    expresion     go to state 31
+    operando      go to state 32
 
 
 State 50
 
-   24 expresion: '+' expresion • expresion
+   14 sentencia: RETURN_FROM expresion •
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 76
-    operando   go to state 28
+    $default  reduce using rule 14 (sentencia)
 
 
 State 51
 
-   25 expresion: '-' expresion • expresion
+   31 expresion: '=' expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 77
-    operando   go to state 28
+    expresion_parentesis  go to state 73
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 52
 
-   26 expresion: '*' expresion • expresion
+   32 expresion: '<' expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 78
-    operando   go to state 28
+    expresion_parentesis  go to state 74
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 53
 
-   27 expresion: '/' expresion • expresion
+   33 expresion: '>' expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 79
-    operando   go to state 28
+    expresion_parentesis  go to state 75
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 54
 
-   38 expresion: '(' ARRAY • expresion ')'
+   26 expresion: '+' expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 80
-    operando   go to state 28
+    expresion_parentesis  go to state 76
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 55
 
-   42 operando: '(' expresion • ')'
+   27 expresion: '-' expresion_parentesis • expresion_parentesis
 
-    ')'  shift, and go to state 81
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 77
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 56
 
-   13 sentencia: '(' LOOP WHILE • '(' expresion ')' DO lista_sentencias ')'
+   28 expresion: '*' expresion_parentesis • expresion_parentesis
 
-    '('  shift, and go to state 82
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
+
+    expresion_parentesis  go to state 78
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 57
 
-    7 sentencia: '(' SETQ IDENTIF • expresion ')'
+   29 expresion: '/' expresion_parentesis • expresion_parentesis
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    NUMBER    shift, and go to state 3
+    IDENTIF   shift, and go to state 4
+    STRING    shift, and go to state 5
+    AND       shift, and go to state 13
+    OR        shift, and go to state 14
+    NOT       shift, and go to state 15
+    MOD       shift, and go to state 16
+    MET       shift, and go to state 17
+    GET       shift, and go to state 18
+    DISTINTO  shift, and go to state 19
+    '='       shift, and go to state 22
+    '<'       shift, and go to state 23
+    '>'       shift, and go to state 24
+    '+'       shift, and go to state 25
+    '-'       shift, and go to state 26
+    '*'       shift, and go to state 27
+    '/'       shift, and go to state 28
+    '('       shift, and go to state 39
 
-    expresion  go to state 83
-    operando   go to state 28
+    expresion_parentesis  go to state 79
+    expresion             go to state 41
+    operando              go to state 32
 
 
 State 58
 
-    8 sentencia: '(' SETF IDENTIF • expresion ')'
+    2 axioma: '(' sentencia ')' • $@1 r_axioma
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
+    $default  reduce using rule 1 ($@1)
 
-    expresion  go to state 84
-    operando   go to state 28
+    $@1  go to state 80
 
 
 State 59
 
-    9 sentencia: '(' DEFUN IDENTIF • '(' IDENTIF ')' lista_sentencias return ')'
+   10 sentencia: LOOP WHILE expresion_parentesis • DO lista_sentencias
 
-    '('  shift, and go to state 85
+    DO  shift, and go to state 81
 
 
 State 60
 
-   10 sentencia: '(' DEFUN MAIN • '(' ')' lista_sentencias ')'
+    5 sentencia: SETQ IDENTIF expresion_parentesis •
 
-    '('  shift, and go to state 86
+    $default  reduce using rule 5 (sentencia)
 
 
 State 61
 
-   11 sentencia: '(' PRINT STRING • ')'
+    6 sentencia: SETF IDENTIF expresion_parentesis •
 
-    ')'  shift, and go to state 87
+    $default  reduce using rule 6 (sentencia)
 
 
 State 62
 
-   12 sentencia: '(' PRINC IDENTIF • ')'
+    7 sentencia: DEFUN MAIN '(' • ')' lista_sentencias
 
-    ')'  shift, and go to state 88
+    ')'  shift, and go to state 82
 
 
 State 63
 
-   19 if_simple: '(' IF '(' • expresion ')' lista_sentencias ')'
-   20 if_else_simple: '(' IF '(' • expresion ')' lista_sentencias lista_sentencias ')'
+   15 expresion_parentesis: '(' expresion • ')'
 
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 89
-    operando   go to state 28
+    ')'  shift, and go to state 83
 
 
 State 64
 
-   16 sentencia: '(' expresion ')' •
+   37 expresion: AND expresion_parentesis expresion_parentesis •
 
-    $default  reduce using rule 16 (sentencia)
+    $default  reduce using rule 37 (expresion)
 
 
 State 65
+
+   38 expresion: OR expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 38 (expresion)
+
+
+State 66
+
+   30 expresion: MOD expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 30 (expresion)
+
+
+State 67
+
+   34 expresion: MET expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 34 (expresion)
+
+
+State 68
+
+   35 expresion: GET expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 35 (expresion)
+
+
+State 69
+
+   36 expresion: DISTINTO expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 36 (expresion)
+
+
+State 70
+
+   18 sentencia_if: '(' • PROGN lista_sentencias ')'
+
+    PROGN  shift, and go to state 84
+
+
+State 71
+
+   19 sentencia_if: sentencia •
+
+    $default  reduce using rule 19 (sentencia_if)
+
+
+State 72
+
+   17 if: IF expresion_parentesis sentencia_if • sentencia_else
+
+    NUMBER       shift, and go to state 3
+    IDENTIF      shift, and go to state 4
+    STRING       shift, and go to state 5
+    MAIN         shift, and go to state 6
+    LOOP         shift, and go to state 7
+    SETQ         shift, and go to state 8
+    SETF         shift, and go to state 9
+    DEFUN        shift, and go to state 10
+    PRINT        shift, and go to state 11
+    PRINC        shift, and go to state 12
+    AND          shift, and go to state 13
+    OR           shift, and go to state 14
+    NOT          shift, and go to state 15
+    MOD          shift, and go to state 16
+    MET          shift, and go to state 17
+    GET          shift, and go to state 18
+    DISTINTO     shift, and go to state 19
+    IF           shift, and go to state 20
+    RETURN_FROM  shift, and go to state 21
+    '='          shift, and go to state 22
+    '<'          shift, and go to state 23
+    '>'          shift, and go to state 24
+    '+'          shift, and go to state 25
+    '-'          shift, and go to state 26
+    '*'          shift, and go to state 27
+    '/'          shift, and go to state 28
+    '('          shift, and go to state 85
+
+    NUMBER       [reduce using rule 22 (sentencia_else)]
+    IDENTIF      [reduce using rule 22 (sentencia_else)]
+    STRING       [reduce using rule 22 (sentencia_else)]
+    MAIN         [reduce using rule 22 (sentencia_else)]
+    LOOP         [reduce using rule 22 (sentencia_else)]
+    SETQ         [reduce using rule 22 (sentencia_else)]
+    SETF         [reduce using rule 22 (sentencia_else)]
+    DEFUN        [reduce using rule 22 (sentencia_else)]
+    PRINT        [reduce using rule 22 (sentencia_else)]
+    PRINC        [reduce using rule 22 (sentencia_else)]
+    AND          [reduce using rule 22 (sentencia_else)]
+    OR           [reduce using rule 22 (sentencia_else)]
+    NOT          [reduce using rule 22 (sentencia_else)]
+    MOD          [reduce using rule 22 (sentencia_else)]
+    MET          [reduce using rule 22 (sentencia_else)]
+    GET          [reduce using rule 22 (sentencia_else)]
+    DISTINTO     [reduce using rule 22 (sentencia_else)]
+    IF           [reduce using rule 22 (sentencia_else)]
+    RETURN_FROM  [reduce using rule 22 (sentencia_else)]
+    '='          [reduce using rule 22 (sentencia_else)]
+    '<'          [reduce using rule 22 (sentencia_else)]
+    '>'          [reduce using rule 22 (sentencia_else)]
+    '+'          [reduce using rule 22 (sentencia_else)]
+    '-'          [reduce using rule 22 (sentencia_else)]
+    '*'          [reduce using rule 22 (sentencia_else)]
+    '/'          [reduce using rule 22 (sentencia_else)]
+    '('          [reduce using rule 22 (sentencia_else)]
+    $default     reduce using rule 22 (sentencia_else)
+
+    sentencia       go to state 86
+    if              go to state 30
+    sentencia_else  go to state 87
+    expresion       go to state 31
+    operando        go to state 32
+
+    shift/reduce conflict on token SETQ:
+       22 sentencia_else: ε •
+        5 sentencia: • SETQ IDENTIF expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • SETQ IDENTIF expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                          sentencia_else
+                                      ↳ 19: sentencia                                                                                       ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 5: • SETQ IDENTIF expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 5: SETQ IDENTIF expresion_parentesis
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token SETF:
+       22 sentencia_else: ε •
+        6 sentencia: • SETF IDENTIF expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • SETF IDENTIF expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                          sentencia_else
+                                      ↳ 19: sentencia                                                                                       ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 6: • SETF IDENTIF expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 6: SETF IDENTIF expresion_parentesis
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token DEFUN:
+       22 sentencia_else: ε •
+        7 sentencia: • DEFUN MAIN '(' ')' lista_sentencias
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • DEFUN MAIN '(' ')' lista_sentencias
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                            sentencia_else
+                                      ↳ 19: sentencia                                                                                         ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 7: • DEFUN MAIN '(' ')' lista_sentencias
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 7: DEFUN MAIN '(' ')' lista_sentencias
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token PRINT:
+       22 sentencia_else: ε •
+        8 sentencia: • PRINT STRING
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • PRINT STRING
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                     sentencia_else
+                                      ↳ 19: sentencia                                                                  ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 8: • PRINT STRING
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 8: PRINT STRING
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token PRINC:
+       22 sentencia_else: ε •
+        9 sentencia: • PRINC expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • PRINC expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                   sentencia_else
+                                      ↳ 19: sentencia                                                                                ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 9: • PRINC expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 9: PRINC expresion_parentesis
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token LOOP:
+       22 sentencia_else: ε •
+       10 sentencia: • LOOP WHILE expresion_parentesis DO lista_sentencias
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • LOOP WHILE expresion_parentesis DO lista_sentencias
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 10: • LOOP WHILE expresion_parentesis DO lista_sentencias
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 10: LOOP WHILE expresion_parentesis DO lista_sentencias
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token MAIN:
+       22 sentencia_else: ε •
+       11 sentencia: • MAIN
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • MAIN
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                              sentencia_else
+                                      ↳ 19: sentencia                                                           ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 11: • MAIN
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 11: MAIN
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token RETURN_FROM:
+       22 sentencia_else: ε •
+       14 sentencia: • RETURN_FROM expresion
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • RETURN_FROM expresion
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                               sentencia_else
+                                      ↳ 19: sentencia                                                                            ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 14: • RETURN_FROM expresion
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 14: RETURN_FROM expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token IF:
+       22 sentencia_else: ε •
+       17 if: • IF expresion_parentesis sentencia_if sentencia_else
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • IF expresion_parentesis sentencia_if
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                                   sentencia_else
+                                      ↳ 19: sentencia                                                                                                                ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 12: if
+                                                                                                         ↳ 17: • IF expresion_parentesis sentencia_if sentencia_else
+                                                                                                                                                      ↳ 17: ε
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •                                                             ↳ 17: ε
+
+    shift/reduce conflict on token '(':
+       22 sentencia_else: ε •
+       20 sentencia_else: • '(' PROGN lista_sentencias ')'
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '(' PROGN lista_sentencias ')'
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                  sentencia_else
+                                      ↳ 19: sentencia                                                                               ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 20: • '(' PROGN lista_sentencias ')'
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 20: '(' PROGN lista_sentencias ')'
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token '+':
+       22 sentencia_else: ε •
+       26 expresion: • '+' expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '+' expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 26: • '+' expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 26: '+' expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token '-':
+       22 sentencia_else: ε •
+       27 expresion: • '-' expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '-' expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 27: • '-' expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 27: '-' expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token '*':
+       22 sentencia_else: ε •
+       28 expresion: • '*' expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '*' expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 28: • '*' expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 28: '*' expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token '/':
+       22 sentencia_else: ε •
+       29 expresion: • '/' expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '/' expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 29: • '/' expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 29: '/' expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token MOD:
+       22 sentencia_else: ε •
+       30 expresion: • MOD expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • MOD expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 30: • MOD expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 30: MOD expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token '=':
+       22 sentencia_else: ε •
+       31 expresion: • '=' expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '=' expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 31: • '=' expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 31: '=' expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token '<':
+       22 sentencia_else: ε •
+       32 expresion: • '<' expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '<' expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 32: • '<' expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 32: '<' expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token '>':
+       22 sentencia_else: ε •
+       33 expresion: • '>' expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • '>' expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 33: • '>' expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 33: '>' expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token MET:
+       22 sentencia_else: ε •
+       34 expresion: • MET expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • MET expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 34: • MET expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 34: MET expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token GET:
+       22 sentencia_else: ε •
+       35 expresion: • GET expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • GET expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 35: • GET expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 35: GET expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token DISTINTO:
+       22 sentencia_else: ε •
+       36 expresion: • DISTINTO expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • DISTINTO expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                                  sentencia_else
+                                      ↳ 19: sentencia                                                                                                               ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 36: • DISTINTO expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 36: DISTINTO expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token AND:
+       22 sentencia_else: ε •
+       37 expresion: • AND expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • AND expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 37: • AND expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 37: AND expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token OR:
+       22 sentencia_else: ε •
+       38 expresion: • OR expresion_parentesis expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • OR expresion_parentesis expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                                            sentencia_else
+                                      ↳ 19: sentencia                                                                                                         ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 38: • OR expresion_parentesis expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 38: OR expresion_parentesis expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token NOT:
+       22 sentencia_else: ε •
+       39 expresion: • NOT expresion_parentesis
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • NOT expresion_parentesis
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                                        sentencia_else
+                                      ↳ 19: sentencia                                                                                     ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 39: • NOT expresion_parentesis
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 39: NOT expresion_parentesis
+                                                                                             ↳ 22: ε •
+
+    shift/reduce conflict on token IDENTIF:
+       22 sentencia_else: ε •
+       40 operando: • IDENTIF
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • IDENTIF
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                             sentencia_else
+                                      ↳ 19: sentencia                                                                          ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 25: operando
+                                                                                                               ↳ 40: • IDENTIF
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 25: operando
+                                                                                             ↳ 22: ε •                        ↳ 40: IDENTIF
+
+    shift/reduce conflict on token NUMBER:
+       22 sentencia_else: ε •
+       41 operando: • NUMBER
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • NUMBER
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                            sentencia_else
+                                      ↳ 19: sentencia                                                                         ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 25: operando
+                                                                                                               ↳ 41: • NUMBER
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 25: operando
+                                                                                             ↳ 22: ε •                        ↳ 41: NUMBER
+
+    shift/reduce conflict on token STRING:
+       22 sentencia_else: ε •
+       42 operando: • STRING
+      Example: IF expresion_parentesis IF expresion_parentesis sentencia_if • STRING
+      Shift derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                                            sentencia_else
+                                      ↳ 19: sentencia                                                                         ↳ 17: ε
+                                            ↳ 12: if
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else
+                                                                                             ↳ 21: sentencia
+                                                                                                   ↳ 13: expresion
+                                                                                                         ↳ 25: operando
+                                                                                                               ↳ 42: • STRING
+      Reduce derivation
+        if
+        ↳ 17: IF expresion_parentesis sentencia_if                                                          sentencia_else
+                                      ↳ 19: sentencia                                                       ↳ 21: sentencia
+                                            ↳ 12: if                                                              ↳ 13: expresion
+                                                  ↳ 17: IF expresion_parentesis sentencia_if sentencia_else             ↳ 25: operando
+                                                                                             ↳ 22: ε •                        ↳ 42: STRING
+
+
+
+State 73
+
+   31 expresion: '=' expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 31 (expresion)
+
+
+State 74
+
+   32 expresion: '<' expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 32 (expresion)
+
+
+State 75
+
+   33 expresion: '>' expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 33 (expresion)
+
+
+State 76
+
+   26 expresion: '+' expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 26 (expresion)
+
+
+State 77
+
+   27 expresion: '-' expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 27 (expresion)
+
+
+State 78
+
+   28 expresion: '*' expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 28 (expresion)
+
+
+State 79
+
+   29 expresion: '/' expresion_parentesis expresion_parentesis •
+
+    $default  reduce using rule 29 (expresion)
+
+
+State 80
+
+    2 axioma: '(' sentencia ')' $@1 • r_axioma
+
+    '('  shift, and go to state 1
+
+    $default  reduce using rule 3 (r_axioma)
+
+    axioma    go to state 88
+    r_axioma  go to state 89
+
+
+State 81
+
+   10 sentencia: LOOP WHILE expresion_parentesis DO • lista_sentencias
+
+    '('  shift, and go to state 90
+
+    lista_sentencias  go to state 91
+
+
+State 82
+
+    7 sentencia: DEFUN MAIN '(' ')' • lista_sentencias
+
+    '('  shift, and go to state 90
+
+    lista_sentencias  go to state 92
+
+
+State 83
+
+   15 expresion_parentesis: '(' expresion ')' •
+
+    $default  reduce using rule 15 (expresion_parentesis)
+
+
+State 84
+
+   18 sentencia_if: '(' PROGN • lista_sentencias ')'
+
+    '('  shift, and go to state 90
+
+    lista_sentencias  go to state 93
+
+
+State 85
+
+   20 sentencia_else: '(' • PROGN lista_sentencias ')'
+
+    PROGN  shift, and go to state 94
+
+
+State 86
+
+   21 sentencia_else: sentencia •
+
+    $default  reduce using rule 21 (sentencia_else)
+
+
+State 87
+
+   17 if: IF expresion_parentesis sentencia_if sentencia_else •
+
+    $default  reduce using rule 17 (if)
+
+
+State 88
 
     4 r_axioma: axioma •
 
     $default  reduce using rule 4 (r_axioma)
 
 
-State 66
+State 89
 
-    2 axioma: sentencia $@1 r_axioma •
+    2 axioma: '(' sentencia ')' $@1 r_axioma •
 
     $default  reduce using rule 2 (axioma)
 
 
-State 67
-
-   35 expresion: AND expresion expresion •
-
-    $default  reduce using rule 35 (expresion)
-
-
-State 68
-
-   36 expresion: OR expresion expresion •
-
-    $default  reduce using rule 36 (expresion)
-
-
-State 69
-
-   28 expresion: MOD expresion expresion •
-
-    $default  reduce using rule 28 (expresion)
-
-
-State 70
-
-   32 expresion: MET expresion expresion •
-
-    $default  reduce using rule 32 (expresion)
-
-
-State 71
-
-   33 expresion: GET expresion expresion •
-
-    $default  reduce using rule 33 (expresion)
-
-
-State 72
-
-   34 expresion: DISTINTO expresion expresion •
-
-    $default  reduce using rule 34 (expresion)
-
-
-State 73
-
-   29 expresion: '=' expresion expresion •
-
-    $default  reduce using rule 29 (expresion)
-
-
-State 74
-
-   30 expresion: '<' expresion expresion •
-
-    $default  reduce using rule 30 (expresion)
-
-
-State 75
-
-   31 expresion: '>' expresion expresion •
-
-    $default  reduce using rule 31 (expresion)
-
-
-State 76
-
-   24 expresion: '+' expresion expresion •
-
-    $default  reduce using rule 24 (expresion)
-
-
-State 77
-
-   25 expresion: '-' expresion expresion •
-
-    $default  reduce using rule 25 (expresion)
-
-
-State 78
-
-   26 expresion: '*' expresion expresion •
-
-    $default  reduce using rule 26 (expresion)
-
-
-State 79
-
-   27 expresion: '/' expresion expresion •
-
-    $default  reduce using rule 27 (expresion)
-
-
-State 80
-
-   38 expresion: '(' ARRAY expresion • ')'
-
-    ')'  shift, and go to state 90
-
-
-State 81
-
-   42 operando: '(' expresion ')' •
-
-    $default  reduce using rule 42 (operando)
-
-
-State 82
-
-   13 sentencia: '(' LOOP WHILE '(' • expresion ')' DO lista_sentencias ')'
-
-    NUMBER    shift, and go to state 9
-    IDENTIF   shift, and go to state 10
-    STRING    shift, and go to state 11
-    AND       shift, and go to state 12
-    OR        shift, and go to state 13
-    NOT       shift, and go to state 14
-    MOD       shift, and go to state 15
-    MET       shift, and go to state 16
-    GET       shift, and go to state 17
-    DISTINTO  shift, and go to state 18
-    '='       shift, and go to state 19
-    '<'       shift, and go to state 20
-    '>'       shift, and go to state 21
-    '+'       shift, and go to state 22
-    '-'       shift, and go to state 23
-    '*'       shift, and go to state 24
-    '/'       shift, and go to state 25
-    '('       shift, and go to state 26
-
-    expresion  go to state 91
-    operando   go to state 28
-
-
-State 83
-
-    7 sentencia: '(' SETQ IDENTIF expresion • ')'
-
-    ')'  shift, and go to state 92
-
-
-State 84
-
-    8 sentencia: '(' SETF IDENTIF expresion • ')'
-
-    ')'  shift, and go to state 93
-
-
-State 85
-
-    9 sentencia: '(' DEFUN IDENTIF '(' • IDENTIF ')' lista_sentencias return ')'
-
-    IDENTIF  shift, and go to state 94
-
-
-State 86
-
-   10 sentencia: '(' DEFUN MAIN '(' • ')' lista_sentencias ')'
-
-    ')'  shift, and go to state 95
-
-
-State 87
-
-   11 sentencia: '(' PRINT STRING ')' •
-
-    $default  reduce using rule 11 (sentencia)
-
-
-State 88
-
-   12 sentencia: '(' PRINC IDENTIF ')' •
-
-    $default  reduce using rule 12 (sentencia)
-
-
-State 89
-
-   19 if_simple: '(' IF '(' expresion • ')' lista_sentencias ')'
-   20 if_else_simple: '(' IF '(' expresion • ')' lista_sentencias lista_sentencias ')'
-
-    ')'  shift, and go to state 96
-
-
 State 90
 
-   38 expresion: '(' ARRAY expresion ')' •
+   23 lista_sentencias: '(' • sentencia ')'
+   24                 | '(' • sentencia ')' lista_sentencias
 
-    $default  reduce using rule 38 (expresion)
+    NUMBER       shift, and go to state 3
+    IDENTIF      shift, and go to state 4
+    STRING       shift, and go to state 5
+    MAIN         shift, and go to state 6
+    LOOP         shift, and go to state 7
+    SETQ         shift, and go to state 8
+    SETF         shift, and go to state 9
+    DEFUN        shift, and go to state 10
+    PRINT        shift, and go to state 11
+    PRINC        shift, and go to state 12
+    AND          shift, and go to state 13
+    OR           shift, and go to state 14
+    NOT          shift, and go to state 15
+    MOD          shift, and go to state 16
+    MET          shift, and go to state 17
+    GET          shift, and go to state 18
+    DISTINTO     shift, and go to state 19
+    IF           shift, and go to state 20
+    RETURN_FROM  shift, and go to state 21
+    '='          shift, and go to state 22
+    '<'          shift, and go to state 23
+    '>'          shift, and go to state 24
+    '+'          shift, and go to state 25
+    '-'          shift, and go to state 26
+    '*'          shift, and go to state 27
+    '/'          shift, and go to state 28
+
+    sentencia  go to state 95
+    if         go to state 30
+    expresion  go to state 31
+    operando   go to state 32
 
 
 State 91
 
-   13 sentencia: '(' LOOP WHILE '(' expresion • ')' DO lista_sentencias ')'
+   10 sentencia: LOOP WHILE expresion_parentesis DO lista_sentencias •
 
-    ')'  shift, and go to state 97
+    $default  reduce using rule 10 (sentencia)
 
 
 State 92
 
-    7 sentencia: '(' SETQ IDENTIF expresion ')' •
+    7 sentencia: DEFUN MAIN '(' ')' lista_sentencias •
 
     $default  reduce using rule 7 (sentencia)
 
 
 State 93
 
-    8 sentencia: '(' SETF IDENTIF expresion ')' •
+   18 sentencia_if: '(' PROGN lista_sentencias • ')'
 
-    $default  reduce using rule 8 (sentencia)
+    ')'  shift, and go to state 96
 
 
 State 94
 
-    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF • ')' lista_sentencias return ')'
+   20 sentencia_else: '(' PROGN • lista_sentencias ')'
 
-    ')'  shift, and go to state 98
+    '('  shift, and go to state 90
+
+    lista_sentencias  go to state 97
 
 
 State 95
 
-   10 sentencia: '(' DEFUN MAIN '(' ')' • lista_sentencias ')'
+   23 lista_sentencias: '(' sentencia • ')'
+   24                 | '(' sentencia • ')' lista_sentencias
 
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-
-    sentencia         go to state 99
-    if_simple         go to state 6
-    if_else_simple    go to state 7
-    lista_sentencias  go to state 100
+    ')'  shift, and go to state 98
 
 
 State 96
 
-   19 if_simple: '(' IF '(' expresion ')' • lista_sentencias ')'
-   20 if_else_simple: '(' IF '(' expresion ')' • lista_sentencias lista_sentencias ')'
+   18 sentencia_if: '(' PROGN lista_sentencias ')' •
 
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-
-    sentencia         go to state 99
-    if_simple         go to state 6
-    if_else_simple    go to state 7
-    lista_sentencias  go to state 101
+    $default  reduce using rule 18 (sentencia_if)
 
 
 State 97
 
-   13 sentencia: '(' LOOP WHILE '(' expresion ')' • DO lista_sentencias ')'
+   20 sentencia_else: '(' PROGN lista_sentencias • ')'
 
-    DO  shift, and go to state 102
+    ')'  shift, and go to state 99
 
 
 State 98
 
-    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' • lista_sentencias return ')'
+   23 lista_sentencias: '(' sentencia ')' •
+   24                 | '(' sentencia ')' • lista_sentencias
 
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
+    '('  shift, and go to state 90
 
-    sentencia         go to state 99
-    if_simple         go to state 6
-    if_else_simple    go to state 7
-    lista_sentencias  go to state 103
+    '('       [reduce using rule 23 (lista_sentencias)]
+    $default  reduce using rule 23 (lista_sentencias)
+
+    lista_sentencias  go to state 100
+
+    shift/reduce conflict on token '(':
+       23 lista_sentencias: '(' sentencia ')' •
+       23 lista_sentencias: • '(' sentencia ')'
+      First example: '(' IF expresion_parentesis DEFUN MAIN '(' ')' '(' sentencia ')' • '(' sentencia ')' sentencia_else ')' $@1 r_axioma $end
+      Shift derivation
+        $accept
+        ↳ 0: axioma                                                                                                                                                 $end
+             ↳ 2: '(' sentencia                                                                                                                    ')' $@1 r_axioma
+                      ↳ 12: if
+                            ↳ 17: IF expresion_parentesis sentencia                                                                 sentencia_else
+                                                          ↳ 7: DEFUN MAIN '(' ')' lista_sentencias
+                                                                                  ↳ 24: '(' sentencia ')' lista_sentencias
+                                                                                                          ↳ 23: • '(' sentencia ')'
+      Second example: '(' IF expresion_parentesis DEFUN MAIN '(' ')' '(' sentencia ')' • '(' PROGN lista_sentencias ')' ')' $@1 r_axioma $end
+      Reduce derivation
+        $accept
+        ↳ 0: axioma                                                                                                                                                     $end
+             ↳ 2: '(' sentencia                                                                                                                        ')' $@1 r_axioma
+                      ↳ 12: if
+                            ↳ 17: IF expresion_parentesis sentencia_if                                            sentencia_else
+                                                          ↳ 19: sentencia                                         ↳ 20: '(' PROGN lista_sentencias ')'
+                                                                ↳ 7: DEFUN MAIN '(' ')' lista_sentencias
+                                                                                        ↳ 23: '(' sentencia ')' •
+
+    shift/reduce conflict on token '(':
+       23 lista_sentencias: '(' sentencia ')' •
+       24 lista_sentencias: • '(' sentencia ')' lista_sentencias
+      First example: '(' IF expresion_parentesis DEFUN MAIN '(' ')' '(' sentencia ')' • '(' sentencia ')' lista_sentencias sentencia_else ')' $@1 r_axioma $end
+      Shift derivation
+        $accept
+        ↳ 0: axioma                                                                                                                                                                  $end
+             ↳ 2: '(' sentencia                                                                                                                                     ')' $@1 r_axioma
+                      ↳ 12: if
+                            ↳ 17: IF expresion_parentesis sentencia                                                                                  sentencia_else
+                                                          ↳ 7: DEFUN MAIN '(' ')' lista_sentencias
+                                                                                  ↳ 24: '(' sentencia ')' lista_sentencias
+                                                                                                          ↳ 24: • '(' sentencia ')' lista_sentencias
+      Second example: '(' IF expresion_parentesis DEFUN MAIN '(' ')' '(' sentencia ')' • '(' PROGN lista_sentencias ')' ')' $@1 r_axioma $end
+      Reduce derivation
+        $accept
+        ↳ 0: axioma                                                                                                                                                     $end
+             ↳ 2: '(' sentencia                                                                                                                        ')' $@1 r_axioma
+                      ↳ 12: if
+                            ↳ 17: IF expresion_parentesis sentencia_if                                            sentencia_else
+                                                          ↳ 19: sentencia                                         ↳ 20: '(' PROGN lista_sentencias ')'
+                                                                ↳ 7: DEFUN MAIN '(' ')' lista_sentencias
+                                                                                        ↳ 23: '(' sentencia ')' •
+
 
 
 State 99
 
-   21 lista_sentencias: sentencia •
+   20 sentencia_else: '(' PROGN lista_sentencias ')' •
 
-    $default  reduce using rule 21 (lista_sentencias)
+    $default  reduce using rule 20 (sentencia_else)
 
 
 State 100
 
-   10 sentencia: '(' DEFUN MAIN '(' ')' lista_sentencias • ')'
-   22 lista_sentencias: lista_sentencias • sentencia
+   24 lista_sentencias: '(' sentencia ')' lista_sentencias •
 
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-    ')'      shift, and go to state 104
-
-    sentencia       go to state 105
-    if_simple       go to state 6
-    if_else_simple  go to state 7
-
-
-State 101
-
-   19 if_simple: '(' IF '(' expresion ')' lista_sentencias • ')'
-   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias • lista_sentencias ')'
-   22 lista_sentencias: lista_sentencias • sentencia
-
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-    ')'      shift, and go to state 106
-
-    sentencia         go to state 107
-    if_simple         go to state 6
-    if_else_simple    go to state 7
-    lista_sentencias  go to state 108
-
-
-State 102
-
-   13 sentencia: '(' LOOP WHILE '(' expresion ')' DO • lista_sentencias ')'
-
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-
-    sentencia         go to state 99
-    if_simple         go to state 6
-    if_else_simple    go to state 7
-    lista_sentencias  go to state 109
-
-
-State 103
-
-    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias • return ')'
-   22 lista_sentencias: lista_sentencias • sentencia
-
-    IDENTIF  shift, and go to state 110
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-
-    $default  reduce using rule 17 (return)
-
-    sentencia       go to state 105
-    return          go to state 111
-    if_simple       go to state 6
-    if_else_simple  go to state 7
-
-
-State 104
-
-   10 sentencia: '(' DEFUN MAIN '(' ')' lista_sentencias ')' •
-
-    $default  reduce using rule 10 (sentencia)
-
-
-State 105
-
-   22 lista_sentencias: lista_sentencias sentencia •
-
-    $default  reduce using rule 22 (lista_sentencias)
-
-
-State 106
-
-   19 if_simple: '(' IF '(' expresion ')' lista_sentencias ')' •
-
-    $default  reduce using rule 19 (if_simple)
-
-
-State 107
-
-   21 lista_sentencias: sentencia •
-   22                 | lista_sentencias sentencia •
-
-    IDENTIF   reduce using rule 21 (lista_sentencias)
-    IDENTIF   [reduce using rule 22 (lista_sentencias)]
-    '@'       reduce using rule 21 (lista_sentencias)
-    '@'       [reduce using rule 22 (lista_sentencias)]
-    '('       reduce using rule 21 (lista_sentencias)
-    '('       [reduce using rule 22 (lista_sentencias)]
-    ')'       reduce using rule 21 (lista_sentencias)
-    ')'       [reduce using rule 22 (lista_sentencias)]
-    $default  reduce using rule 21 (lista_sentencias)
-
-    reduce/reduce conflict on tokens IDENTIF, '@', '(', ')':
-       21 lista_sentencias: sentencia •
-       22 lista_sentencias: lista_sentencias sentencia •
-      Example: '(' IF '(' expresion ')' lista_sentencias sentencia • ')'
-      First reduce derivation
-        sentencia
-        ↳ 15: if_else_simple
-              ↳ 20: '(' IF '(' expresion ')' lista_sentencias lista_sentencias  ')'
-                                                              ↳ 21: sentencia •
-      Second reduce derivation
-        sentencia
-        ↳ 14: if_simple
-              ↳ 19: '(' IF '(' expresion ')' lista_sentencias                   ')'
-                                             ↳ 22: lista_sentencias sentencia •
-
-
-
-State 108
-
-   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias lista_sentencias • ')'
-   22 lista_sentencias: lista_sentencias • sentencia
-
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-    ')'      shift, and go to state 112
-
-    sentencia       go to state 105
-    if_simple       go to state 6
-    if_else_simple  go to state 7
-
-
-State 109
-
-   13 sentencia: '(' LOOP WHILE '(' expresion ')' DO lista_sentencias • ')'
-   22 lista_sentencias: lista_sentencias • sentencia
-
-    IDENTIF  shift, and go to state 1
-    '@'      shift, and go to state 2
-    '('      shift, and go to state 3
-    ')'      shift, and go to state 113
-
-    sentencia       go to state 105
-    if_simple       go to state 6
-    if_else_simple  go to state 7
-
-
-State 110
-
-    5 sentencia: IDENTIF • '=' expresion
-   18 return: IDENTIF •
-
-    '='  shift, and go to state 8
-
-    $default  reduce using rule 18 (return)
-
-
-State 111
-
-    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return • ')'
-
-    ')'  shift, and go to state 114
-
-
-State 112
-
-   20 if_else_simple: '(' IF '(' expresion ')' lista_sentencias lista_sentencias ')' •
-
-    $default  reduce using rule 20 (if_else_simple)
-
-
-State 113
-
-   13 sentencia: '(' LOOP WHILE '(' expresion ')' DO lista_sentencias ')' •
-
-    $default  reduce using rule 13 (sentencia)
-
-
-State 114
-
-    9 sentencia: '(' DEFUN IDENTIF '(' IDENTIF ')' lista_sentencias return ')' •
-
-    $default  reduce using rule 9 (sentencia)
+    $default  reduce using rule 24 (lista_sentencias)
