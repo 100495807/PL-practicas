@@ -290,7 +290,7 @@ sentencia_sep:
 
 
 sentencia_simple:
-            IDENTIF '=' expresion { 
+            IDENTIF '=' expresion {  // Asignación a una variable
                 if(!es_variable_local($1.code)) {
                     sprintf(temp, "(setf %s %s)", $1.code, $3.code);
                 } else {
@@ -298,7 +298,7 @@ sentencia_simple:
                 }
                 $$.code = gen_code(temp); 
                 }
-            | IDENTIF '[' expresion ']' '=' expresion {
+            | IDENTIF '[' expresion ']' '=' expresion {  // Asignación a un elemento de un array
                 if(!es_variable_local($1.code)) {
                     sprintf(temp, "(setf (aref %s %s) %s)", $1.code, $3.code, $6.code);
                 } else {
@@ -306,17 +306,21 @@ sentencia_simple:
                 }
                 $$.code = gen_code(temp); 
                 }
-            | IDENTIF '(' argumentos ')' {  // Llamada a función como sentencia
+            | IDENTIF '(' argumentos ')' {  // Llamada a función como sentencia y con posibles argumentos
                 sprintf(temp, "(%s %s)", $1.code, $3.code);
                 $$.code = gen_code(temp);
                 }
-            | '@' expresion                   { sprintf(temp, "(print %s)", $2.code);
-                                                $$.code = gen_code(temp); }
-            | PUTS '(' STRING ')'             { sprintf(temp, "(print \"%s\")", $3.code);
-                                                $$.code = gen_code(temp); }
-            | PRINTF '(' STRING ',' lista_elementos ')' {
-                                                $$.code = $5.code;
-                                                }
+            | '@' expresion     { 
+                                    sprintf(temp, "(print %s)", $2.code);            
+                                    $$.code = gen_code(temp); 
+                                }
+            | PUTS '(' STRING ')'   { // traducion de puts
+                                        sprintf(temp, "(print \"%s\")", $3.code);       
+                                        $$.code = gen_code(temp); 
+                                    }
+            | PRINTF '(' STRING ',' lista_elementos ')' {   //traducion de printf
+                                                            $$.code = $5.code;
+                                                        }
             |RETURN expresion {
                 if (funcion_actual != NULL) {
                     if (!es_variable_local($2.code)) {
