@@ -72,7 +72,7 @@ void anadir_var_local(char *nombre) {
 }
 
 
-void vaciar_variables_locales() {
+void vacial_variables_locales() {
     variables_locales = NULL;
 }
 
@@ -134,7 +134,6 @@ definicion_var_global:
                 }
             ;
 
-// Definición de un conjunto de variables globales
 conjunto_vars_global:
             IDENTIF { 
                 sprintf(temp, "(setq %s 0)", $1.code); 
@@ -169,7 +168,7 @@ conjunto_funciones:
                 }
             ;
 
-// Definición de funciones con la función principal
+
 funiones_con_main:
             funcion_principal { 
                 $$.code = $1.code; 
@@ -180,7 +179,6 @@ funiones_con_main:
                 }
             ;
 
-// Definición de funciones auxiliares
 funciones_auxiliares:
             definicion_funcion { 
                 $$.code = $1.code; 
@@ -191,7 +189,8 @@ funciones_auxiliares:
                 }
             ;
 
-// Definición de una función
+
+
 definicion_funcion:
             cabecera_funcion '{' bloque_sentencias '}' {
                 // Aquí ya funcion_actual está bien definida
@@ -201,7 +200,7 @@ definicion_funcion:
                 } else {
                     ultima_instruccion = $3.code;
                 }
-                // Verificamos si la última instrucción es un return
+
                 if (strstr(ultima_instruccion, "return") != NULL) {
                     sprintf(temp, "(defun %s (%s)\n%s)", funcion_actual, $1.code, $3.code);
                 } else {
@@ -213,7 +212,6 @@ definicion_funcion:
                 }
             ;
 
-// Definición de la cabecera de la función
 cabecera_funcion:
                 IDENTIF '(' argumentos_funcion ')' {
                     funcion_actual = strdup($1.code); 
@@ -223,7 +221,7 @@ cabecera_funcion:
                     }
                 ;
 
-// Definición de los argumentos de la función
+
 argumentos_funcion:
             /* vacío */ { 
                 $$.code = gen_code(""); 
@@ -233,7 +231,6 @@ argumentos_funcion:
                 }
             ;
 
-// Definición de los parámetros de la función
 conjunto_parametros:
             entrada_funcion { 
                 $$.code = $1.code; 
@@ -244,7 +241,6 @@ conjunto_parametros:
                 }
             ;
 
-// Definición de un parámetro de la función
 entrada_funcion:
             INTEGER IDENTIF { 
                 sprintf(temp, "%s", $2.code);
@@ -252,29 +248,24 @@ entrada_funcion:
                 }
             ;
 
-// Definición de la función principal
 inicio_main:
             MAIN '(' ')' {
-                funcion_actual = strdup("main");   
-                // Definimos la función principal    
-                vaciar_variables_locales();           
+                funcion_actual = strdup("main");       
+                vacial_variables_locales();           
                 }
             ;
 
-
-// Definición del bloque principal de la función
 funcion_principal:
             inicio_main '{' bloque_sentencias '}' {
                 sprintf(temp, "(defun main ()\n%s\n)", $3.code);
                 $$.code = gen_code(temp);
-                // Liberar la memoria de la variable global
-                vaciar_variables_locales();          
+                vacial_variables_locales();          
                 free(funcion_actual);
                 }
             ;
 
 
-// Definición del bloque de sentencias
+
 bloque_sentencias:
             sentencia_sep { 
                 $$ = $1; 
@@ -285,7 +276,6 @@ bloque_sentencias:
                 }
             ;
 
-// Definición de una sentencia
 sentencia_sep:
             sentencia_simple ';' { 
                 $$ = $1; 
@@ -298,7 +288,7 @@ sentencia_sep:
                 }
             ;
 
-// Definición de una sentencia simple
+
 sentencia_simple:
             IDENTIF '=' expresion {  // Asignación a una variable
                 if(!es_variable_local($1.code)) {
@@ -333,7 +323,7 @@ sentencia_simple:
                                                         }
             |RETURN expresion {
                 if (funcion_actual != NULL) {
-                    if (!es_variable_local($2.code)) { //comprobamos si es variable local
+                    if (!es_variable_local($2.code)) {
                         sprintf(temp, "(return-from %s %s)", funcion_actual, $2.code);
                     } else {
                         sprintf(temp, "(return_from %s %s_%s)", funcion_actual, funcion_actual, $2.code);
@@ -343,26 +333,23 @@ sentencia_simple:
                 }
             ;
 
-// Definición de una sentencia de control
 sentencia_bloque:
             if_solo
             | if_else
-            | WHILE '(' expresion ')' '{' bloque_sentencias '}' { // Definición de la sentencia while
+            | WHILE '(' expresion ')' '{' bloque_sentencias '}' {
                 sprintf(temp, "(loop while %s do\n%s)", $3.code, $6.code);
                 $$.code = gen_code(temp);
                 }
-            | FOR '(' asignacion_inicial ';' expresion ';' aumento ')' '{' bloque_sentencias '}' { 
-                // Definición del bucle for
+            | FOR '(' asignacion_inicial ';' expresion ';' aumento ')' '{' bloque_sentencias '}' {
                 sprintf(temp, "%s\n(loop while %s do\n%s\n%s)", 
                         $3.code, $5.code, $10.code, $7.code);
                 $$.code = gen_code(temp);
                 }
             ;
 
-// definicion del aumento bucle for
 aumento:
             IDENTIF '=' expresion {
-                if (!es_variable_local($1.code)) { //comprobamos si es variable local
+                if (!es_variable_local($1.code)) {
                     sprintf(temp, "(setf %s %s)", $1.code, $3.code);
                 } else {
                     sprintf(temp, "(setf %s_%s %s)", funcion_actual, $1.code, $3.code);
@@ -371,11 +358,9 @@ aumento:
                 }
             ;
 
-
-// Definición de la asignación inicial del bucle for
 asignacion_inicial:
             IDENTIF '=' operando {
-                if (!es_variable_local($1.code)) { //comprobamos si es variable local
+                if (!es_variable_local($1.code)) {
                     sprintf(temp, "(setq %s %s)", $1.code, $3.code);
                 } else {
                     sprintf(temp, "(setq %s_%s %s)", funcion_actual, $1.code, $3.code);
@@ -384,7 +369,6 @@ asignacion_inicial:
                 }
             ;
 
-// Definición de la sentencia if-else
 if_else:
             IF '(' expresion ')' '{' bloque_sentencias '}' ELSE '{' bloque_sentencias '}' {
                     sprintf(temp, "(if %s\n(progn\n%s)\n(progn\n%s))", $3.code, $6.code, $10.code);
@@ -392,7 +376,6 @@ if_else:
                 }
             ;
 
-// Definición de la sentencia if sin else
 if_solo:
             IF '(' expresion ')' '{' bloque_sentencias '}' {
                     sprintf(temp, "(if %s\n(progn %s))", $3.code, $6.code);
@@ -401,14 +384,13 @@ if_solo:
             ;
 
 
-// Definición de la declaración de variables
+
 declaracion_variable:
             INTEGER lista_declaracion   { 
                 $$.code = $2.code; 
                 }
             ;
 
-// Definición de la lista de declaración de variables
 lista_declaracion: 
             IDENTIF { 
                 anadir_var_local($1.code);
@@ -437,7 +419,6 @@ lista_declaracion:
             }
             ;
 
-// Definición de la expresión
 expresion:      
             termino { 
                 $$ = $1; 
@@ -503,7 +484,6 @@ expresion:
                 }
             ;
 
-// Definición de un término
 termino:        
             operando { 
                 $$ = $1; 
@@ -517,7 +497,6 @@ termino:
                 }    
             ;
 
-// Definición de un operando
 operando:   
             IDENTIF {
                 if(funcion_actual == NULL || !es_variable_local($1.code)) {
@@ -548,7 +527,6 @@ operando:
                 }
             ;
 
-// Definición de la lista de elementos
 lista_elementos:    
             elemento { 
                 $$.code = $1.code; 
@@ -559,7 +537,6 @@ lista_elementos:
                 }
             ;
 
-// Definición de un elemento
 elemento:   expresion { 
                 sprintf(temp, "(princ %s)", $1.code);
                 $$.code = gen_code(temp); 
@@ -570,7 +547,7 @@ elemento:   expresion {
                 }
             ;
 
-// Definición de los argumentos de la función
+
 argumentos:
             /* vacío */ { $$.code = gen_code(""); }
             | lista_argumentos { 
@@ -578,7 +555,6 @@ argumentos:
                 }
             ;
 
-// Definición de la lista de argumentos
 lista_argumentos:
             expresion { 
                 $$.code = $1.code; 

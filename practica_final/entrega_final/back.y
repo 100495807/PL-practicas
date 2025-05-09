@@ -88,17 +88,14 @@ typedef struct s_attr {
 
 %%                            // Seccion 3 Gramatica - Semantico
 
-// Declaracion de la gramatica
 axioma:      '(' sentencia ')'                 { printf ("%s\n", $2.code) ; }
                 r_axioma                 { ; }
             ;
 
-// recursividad axioma
 r_axioma:                                { ; }
             |   axioma                   { ; }
             ;
 
-// declaracion de sentencia
 sentencia:  SETQ IDENTIF expresion_parentesis { sprintf(temp, "variable %s\n%s %s !", $2.code, $3.code, $2.code);
                                             $$.code = gen_code(temp); }
             |  SETF IDENTIF expresion_parentesis  { sprintf(temp, "%s %s !", $3.code, $2.code);
@@ -122,13 +119,14 @@ sentencia:  SETQ IDENTIF expresion_parentesis { sprintf(temp, "variable %s\n%s %
                                            $$.code = gen_code (temp) ; }
             ;
 
-// declaracion de expresion_parentesis para acpetar con o sin parenteis
 expresion_parentesis: '(' expresion ')' { sprintf (temp, "%s", $2.code) ;
                                            $$.code = gen_code (temp) ; }
             | expresion { sprintf (temp, "%s", $1.code) ;
                                            $$.code = gen_code (temp) ; }
 
-// declaracion de if
+
+
+
 if:  IF expresion_parentesis sentencia_if sentencia_else  {
                                         if (strlen($4.code) <= 0) {  
                                             sprintf(temp, "%s\nIF\n%s\nTHEN", $2.code, $3.code);
@@ -139,7 +137,8 @@ if:  IF expresion_parentesis sentencia_if sentencia_else  {
                                         }
                                     ;
 
-// declaracion de sentencia_if
+
+
 sentencia_if:     '(' PROGN lista_sentencias ')'   {
                                             sprintf (temp, "%s", $3.code);
                                             $$.code = gen_code(temp);
@@ -149,7 +148,6 @@ sentencia_if:     '(' PROGN lista_sentencias ')'   {
                                             $$.code = gen_code(temp); 
                                                 }
 
-// declaracion de sentencia_else
 sentencia_else:     '(' PROGN lista_sentencias ')'   {
                                             sprintf (temp, "%s", $3.code);
                                             $$.code = gen_code(temp);
@@ -163,14 +161,13 @@ sentencia_else:     '(' PROGN lista_sentencias ')'   {
                                                 }
                                         ;    
 
-// declaracion de lista de sentencias
+
 lista_sentencias: '(' sentencia ')' { sprintf (temp, "%s", $2.code) ;
                                            $$.code = gen_code (temp) ; }
             |  '(' sentencia ')' lista_sentencias  { sprintf (temp, "%s\n%s", $2.code, $4.code) ;
                                            $$.code = gen_code (temp) ; }
             ;
-
-// declaracion de expresion
+          
 expresion:      operando                  { $$ = $1 ; }
             |   '+' expresion_parentesis expresion_parentesis  { sprintf (temp, "%s %s +", $2.code, $3.code) ;
                                            $$.code = gen_code (temp) ; }
@@ -204,7 +201,8 @@ expresion:      operando                  { $$ = $1 ; }
                                              $$.code = gen_code (temp) ; }
             ;
 
-// declaracion de operando
+
+
 operando:       IDENTIF                  { sprintf (temp, "%s @", $1.code) ;
                                            $$.code = gen_code (temp) ; }
             |   NUMBER                   { sprintf (temp, "%d", $1.value) ;
